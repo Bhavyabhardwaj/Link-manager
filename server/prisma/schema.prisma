@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String      @id @default(cuid())
+  email                String      @unique
+  username             String      @unique
+  password             String
+  name                 String?
+  bio                  String?
+  image                String?
+
+  // Bio page
+  isPublic           Boolean     @default(true)
+  theme               String      @default("light")
+
+  // auth token
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  githubId             String?     @unique @map("github_id")
+  googleId             String?     @unique @map("google_id")
+
+  // Relations
+  links                Link[]
+  linkClicks           linkClick[]
+
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  @@index([username])
+  @@index([isPublic])
+}
+
+model Link {
+  id          String      @id @default(cuid())
+  url         String
+  title       String
+  slug        String?      @unique
+  description String?
+  type        LinkType     @default(BIO)
+  active      Boolean     @default(true)
+
+  // order of links in bio
+  order       Int?        @default(0)
+  icon        String?
+
+  // short link
+  customSlug Boolean @default(false)
+  expiresAt   DateTime?
+  clickLimit  Int?
+  password    String?
+
+  clickCount  Int         @default(0)
+  qrCode      String?
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  linkClicks  linkClick[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([slug])
+  @@index([expiresAt])
+  @@index([userId, order])
+}
+
+model linkClick {
+  id        String   @id @default(cuid())
+  linkId    String
+  userId    String?
+
+  // visitor tracking
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  country   String?
+  city      String?
+  agent     String?
+
+  // device information
+  device    String?
+  os        String?
+  browser   String?
+
+  clickDate DateTime @default(dbgenerated("CURRENT_DATE"))
+
+  link      Link     @relation(fields: [linkId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([linkId])
+  @@index([userId])
+  @@index([country])
+  @@index([device])
+  @@index([clickDate])
+}
+
+enum LinkType {
+  BIO
+  SHORT
+}

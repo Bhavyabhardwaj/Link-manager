@@ -10,6 +10,7 @@ import {
     LinkLookupParams
 } from "../types";
 
+// find a link by its slug
 export const findLinkBySlug = async (slug: string, params?: LinkLookupParams) => {
     return await prisma.link.findUnique({
         where: {
@@ -20,6 +21,7 @@ export const findLinkBySlug = async (slug: string, params?: LinkLookupParams) =>
     });
 };
 
+// Process a redirect request for a short link
 export const processLinkRedirect = async (
     slug: string,
     userAgent: string,
@@ -78,6 +80,7 @@ export const processLinkRedirect = async (
     }
 };
 
+// Get information about a short link
 export const getLinkInformation = async (slug: string): Promise<LinkInfoResult> => {
     try {
         const link = await prisma.link.findUnique({
@@ -112,10 +115,11 @@ export const getLinkInformation = async (slug: string): Promise<LinkInfoResult> 
             };
         }
 
+        // return link information
         return {
             success: true,
             data: {
-                ...link,
+                ...link, // Spread the link properties
                 slug: link.slug!,
                 shortUrl: `${process.env.BASE_URL || 'http://localhost:3000'}/${link.slug}`,
                 clickCount: link._count.linkClicks,
@@ -133,6 +137,7 @@ export const getLinkInformation = async (slug: string): Promise<LinkInfoResult> 
     }
 };
 
+// Get analytics for a short link
 export const getLinkAnalytics = async (
     slug: string,
     query?: redirectValidation.AnalyticsQueryInput
@@ -163,13 +168,13 @@ export const getLinkAnalytics = async (
         }
 
         const [totalClicks, uniqueClicksResult, recentClicks] = await Promise.all([
-            prisma.linkClick.count({
+            prisma.linkClick.count({ // Count total clicks 
                 where: {
                     linkId: link.id,
                     createdAt: { gte: startDate }
                 }
             }),
-            prisma.linkClick.groupBy({
+            prisma.linkClick.groupBy({ // Get unique clicks by IP address and group them
                 by: ['ipAddress'],
                 where: {
                     linkId: link.id,

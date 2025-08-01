@@ -1,6 +1,7 @@
 import prisma from "../config/db";
 import { NotFoundError } from "../errors";
 
+// Get public bio page
 export const getProfile = async (username: string) => {
     const user = await prisma.user.findUnique({
         where: {

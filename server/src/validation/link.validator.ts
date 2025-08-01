@@ -30,10 +30,27 @@ export const linkUpdateValidator = z.object({
   description: z.string().max(200).optional(),
   icon: z.string().max(10).optional(),
   order: z.number().int().min(0).optional(),
-  active: z.boolean().optional()
+  active: z.boolean().optional(),
+  expiresAt: z.date().optional(),
+  clickLimit: z.number().int().min(1).optional(),
+  password: z.string().min(4).optional()
+})
+
+export const linkExpirationValidator = z.object({
+  expiresAt: z.date().refine(date => date > new Date(), {
+    message: "Expiration date must be in the future"
+  })
+})
+
+export const linkExpirationUpdateValidator = z.object({
+  expiresAt: z.date().nullable().optional().refine(date => !date || date > new Date(), {
+    message: "Expiration date must be in the future"
+  })
 })
 
 
 export type BioLinkInput = z.infer<typeof bioLinkValidator>;
 export type ShortLinkInput = z.infer<typeof shortLinkValidator>;
 export type LinkUpdateInput = z.infer<typeof linkUpdateValidator>;
+export type LinkExpirationInput = z.infer<typeof linkExpirationValidator>;
+export type LinkExpirationUpdateInput = z.infer<typeof linkExpirationUpdateValidator>;

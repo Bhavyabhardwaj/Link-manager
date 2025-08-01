@@ -36,6 +36,11 @@ export const createShortLink = async (userId: string, linkData: linkValidation.S
         }
     }
 
+    // Validate expiration date
+    if (linkData.expiresAt && linkData.expiresAt <= new Date()) {
+        throw new BadRequestError("Expiration date must be in the future");
+    }
+
     return await prisma.link.create({
         data: {
             ...linkData,
@@ -184,5 +189,151 @@ export const regenerateQRCode = async (linkId: string, options?: any) => {
     return await prisma.link.update({
         where: { id: linkId },
         data: { qrCode }
+    });
+};
+
+// Link expiration utility functions
+export const isLinkExpired = (link: any): boolean => {
+    if (!link.expiresAt) return false;
+    return new Date() > new Date(link.expiresAt);
+};
+
+export const isLinkClickLimitReached = (link: any): boolean => {
+    if (!link.clickLimit) return false;
+    return link.clickCount >= link.clickLimit;
+};
+
+export const isLinkAccessible = (link: any): boolean => {
+    if (!link.active) return false;
+    if (isLinkExpired(link)) return false;
+    if (isLinkClickLimitReached(link)) return false;
+    return true;
+};
+
+export const getLinkWithExpiration = async (slug: string) => {
+    const link = await prisma.link.findUnique({
+        where: { slug },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    username: true,
+                    name: true
+                }
+            }
+        }
+    });
+
+    if (!link) {
+        throw new BadRequestError("Link not found");
+    }
+
+    if (!isLinkAccessible(link)) {
+        if (isLinkExpired(link)) {
+            throw new BadRequestError("This link has expired");
+        }
+        if (isLinkClickLimitReached(link)) {
+            throw new BadRequestError("This link has reached its click limit");
+        }
+        if (!link.active) {
+            throw new BadRequestError("This link is no longer active");
+        }
+    }
+
+    return link;
+};
+
+export const getActiveLinks = async (userId: string, type?: LinkType) => {
+    const where: any = {
+        userId,
+        active: true,
+        OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+        ]
+    };
+
+    if (type) {
+        where.type = type;
+    }
+
+    return await prisma.link.findMany({
+        where,
+        orderBy: type === LinkType.BIO ? { order: 'asc' } : { createdAt: 'desc' },
+        include: {
+            _count: {
+                select: { linkClicks: true }
+            }
+        }
+    });
+};
+
+export const extendLinkExpiration = async (linkId: string, userId: string, newExpirationDate: Date) => {
+    if (newExpirationDate <= new Date()) {
+        throw new BadRequestError("New expiration date must be in the future");
+    }
+
+    const link = await prisma.link.findUnique({
+        where: { id: linkId, userId }
+    });
+
+    if (!link) {
+        throw new BadRequestError("Link not found");
+    }
+
+    return await prisma.link.update({
+        where: { id: linkId },
+        data: { expiresAt: newExpirationDate }
+    });
+};
+
+export const removeExpiration = async (linkId: string, userId: string) => {
+    const link = await prisma.link.findUnique({
+        where: { id: linkId, userId }
+    });
+
+    if (!link) {
+        throw new BadRequestError("Link not found");
+    }
+
+    return await prisma.link.update({
+        where: { id: linkId },
+        data: { expiresAt: null }
+    });
+};
+
+export const getExpiredLinks = async (userId: string) => {
+    return await prisma.link.findMany({
+        where: {
+            userId,
+            active: true,
+            expiresAt: {
+                lt: new Date()
+            }
+        },
+        orderBy: { expiresAt: 'desc' },
+        include: {
+            _count: {
+                select: { linkClicks: true }
+            }
+        }
+    });
+};
+
+export const cleanupExpiredLinks = async (userId?: string) => {
+    const where: any = {
+        active: true,
+        expiresAt: {
+            lt: new Date()
+        }
+    };
+
+    if (userId) {
+        where.userId = userId;
+    }
+
+    return await prisma.link.updateMany({
+        where,
+        data: { active: false }
     });
 };

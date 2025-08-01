@@ -2,6 +2,7 @@ import prisma from "../config/db";
 import { deviceUtil, ipUtil } from "../utils";
 import { redirectValidation } from "../validation";
 import { linkClickService } from ".";
+import { linkService } from ".";
 import { LinkType } from "../generated/prisma";
 import {
     RedirectResult,
@@ -29,36 +30,16 @@ export const processLinkRedirect = async (
     referrer?: string
 ): Promise<RedirectResult> => {
     try {
-        // Find the short link
-        const link = await findLinkBySlug(slug);
+        // Find the short link using the enhanced service with expiration checks
+        const link = await linkService.getLinkWithExpiration(slug);
 
-        if (!link) {
-            return {
-                success: false,
-                error: "Link not found",
-                message: "The short link you're looking for doesn't exist or has been deleted."
-            };
-        }
+        // Increment click count
+        await prisma.link.update({
+            where: { id: link.id },
+            data: { clickCount: { increment: 1 } }
+        });
 
-        // Check if link has expired
-        if (link.expiresAt && new Date() > link.expiresAt) {
-            return {
-                success: false,
-                error: "Link expired",
-                message: "This short link has expired."
-            };
-        }
-
-        // Check click limit
-        if (link.clickLimit && link.clickCount >= link.clickLimit) {
-            return {
-                success: false,
-                error: "Click limit reached",
-                message: "This short link has reached its click limit."
-            };
-        }
-
-        // Track the click asynchronously (don't wait for it to complete)
+        // Track the click asynchronously
         trackLinkClick(link.id, userAgent, ip, referrer).catch(error => {
             console.error("Failed to track click:", error);
             // Don't fail the redirect if tracking fails
@@ -66,16 +47,15 @@ export const processLinkRedirect = async (
 
         return {
             success: true,
-            message: "Redirecting to the original URL...",
-            redirectUrl: link.url
+            redirectUrl: link.url,
+            message: "Redirect successful"
         };
 
-    } catch (error) {
-        console.error("Error in processLinkRedirect:", error);
+    } catch (error: any) {
         return {
             success: false,
-            error: "Internal server error",
-            message: "Something went wrong while processing the redirect."
+            error: error.message || "Redirect failed",
+            message: error.message || "Unable to process redirect request"
         };
     }
 };
@@ -115,15 +95,25 @@ export const getLinkInformation = async (slug: string): Promise<LinkInfoResult> 
             };
         }
 
-        // return link information
+        // Check if link is expired or reached click limit
+        const isExpired = linkService.isLinkExpired(link);
+        const isClickLimitReached = linkService.isLinkClickLimitReached(link);
+        const isAccessible = linkService.isLinkAccessible(link);
+
+        // return link information with status
         return {
             success: true,
             data: {
-                ...link, // Spread the link properties
+                ...link,
                 slug: link.slug!,
                 shortUrl: `${process.env.BASE_URL || 'http://localhost:3000'}/${link.slug}`,
                 clickCount: link._count.linkClicks,
                 description: link.description || "",
+                isExpired,
+                isClickLimitReached,
+                isAccessible,
+                remainingClicks: link.clickLimit ? Math.max(0, link.clickLimit - link.clickCount) : null,
+                daysUntilExpiration: link.expiresAt ? Math.ceil((new Date(link.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
             }
         };
 
@@ -168,13 +158,13 @@ export const getLinkAnalytics = async (
         }
 
         const [totalClicks, uniqueClicksResult, recentClicks] = await Promise.all([
-            prisma.linkClick.count({ // Count total clicks 
+            prisma.linkClick.count({
                 where: {
                     linkId: link.id,
                     createdAt: { gte: startDate }
                 }
             }),
-            prisma.linkClick.groupBy({ // Get unique clicks by IP address and group them
+            prisma.linkClick.groupBy({
                 by: ['ipAddress'],
                 where: {
                     linkId: link.id,
@@ -241,20 +231,14 @@ const trackLinkClick = async (
             referrer: referrer || "",
             country: ipInfo.country || "Unknown",
             city: ipInfo.city || "Unknown",
-            agent: deviceInfo.browser || "Unknown",
             device: deviceInfo.deviceType || "Unknown",
             os: deviceInfo.os || "Unknown",
             browser: deviceInfo.browser || "Unknown",
-        });
-
-        // Update click count
-        await prisma.link.update({
-            where: { id: linkId },
-            data: { clickCount: { increment: 1 } }
+            agent: deviceInfo.browser || "Unknown"
         });
 
     } catch (error) {
         console.error("Error tracking link click:", error);
-        throw error;
+        // Don't throw error to avoid breaking the redirect
     }
 };

@@ -192,3 +192,103 @@ export const regenerateQRCode = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+
+// Link expiration controllers
+export const extendLinkExpiration = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+    const { expiresAt } = linkValidation.linkExpirationValidator.parse(req.body);
+
+    const updatedLink = await linkService.extendLinkExpiration(id, userId, expiresAt);
+    
+    res.status(200).json({
+      status: "success",
+      message: "Link expiration updated successfully",
+      data: updatedLink
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeLinkExpiration = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+
+    const updatedLink = await linkService.removeExpiration(id, userId);
+    
+    res.status(200).json({
+      status: "success",
+      message: "Link expiration removed successfully",
+      data: updatedLink
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getExpiredLinks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user.id;
+    const expiredLinks = await linkService.getExpiredLinks(userId);
+    
+    res.status(200).json({
+      status: "success",
+      message: "Expired links fetched successfully",
+      data: expiredLinks
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cleanupExpiredLinks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user.id;
+    const result = await linkService.cleanupExpiredLinks(userId);
+    
+    res.status(200).json({
+      status: "success",
+      message: `Cleaned up ${result.count} expired links`,
+      data: { cleanedCount: result.count }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getLinkStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+    const link = await linkService.getLinkById(id, userId);
+    
+    if (!link) {
+      throw new NotFoundError("Link not found");
+    }
+
+    const status = {
+      id: link.id,
+      title: link.title,
+      active: link.active,
+      isExpired: linkService.isLinkExpired(link),
+      isClickLimitReached: linkService.isLinkClickLimitReached(link),
+      isAccessible: linkService.isLinkAccessible(link),
+      expiresAt: link.expiresAt,
+      clickLimit: link.clickLimit,
+      clickCount: link.clickCount,
+      remainingClicks: link.clickLimit ? Math.max(0, link.clickLimit - link.clickCount) : null,
+      daysUntilExpiration: link.expiresAt ? Math.ceil((new Date(link.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
+    };
+    
+    res.status(200).json({
+      status: "success",
+      message: "Link status fetched successfully",
+      data: status
+    });
+  } catch (error) {
+    next(error);
+  }
+};

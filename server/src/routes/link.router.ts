@@ -357,4 +357,108 @@ linkRouter.get('/generate-qr-code/:id', (req, res, next) => {
  */
 linkRouter.get('/:id/analytics', analyticsController.getLinkAnalytics);
 
+/**
+ * @swagger
+ * /api/links/{id}/extend-expiration:
+ *   put:
+ *     summary: Extend the expiration date of a link
+ *     tags: [Link Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the link to extend expiration
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - expiresAt
+ *             properties:
+ *               expiresAt:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-12-31T23:59:59.000Z"
+ *     responses:
+ *       200:
+ *         description: Link expiration updated successfully
+ */
+linkRouter.put('/:id/extend-expiration', linkController.extendLinkExpiration);
+
+/**
+ * @swagger
+ * /api/links/{id}/remove-expiration:
+ *   put:
+ *     summary: Remove expiration date from a link (make it permanent)
+ *     tags: [Link Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the link to remove expiration from
+ *     responses:
+ *       200:
+ *         description: Link expiration removed successfully
+ */
+linkRouter.put('/:id/remove-expiration', linkController.removeLinkExpiration);
+
+/**
+ * @swagger
+ * /api/links/{id}/status:
+ *   get:
+ *     summary: Get detailed status of a link (active, expired, click limit, etc.)
+ *     tags: [Link Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the link to check status
+ *     responses:
+ *       200:
+ *         description: Link status fetched successfully
+ */
+linkRouter.get('/:id/status', linkController.getLinkStatus);
+
+/**
+ * @swagger
+ * /api/links/expired:
+ *   get:
+ *     summary: Get all expired links for the authenticated user
+ *     tags: [Link Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Expired links fetched successfully
+ */
+linkRouter.get('/expired', linkController.getExpiredLinks);
+
+/**
+ * @swagger
+ * /api/links/cleanup-expired:
+ *   post:
+ *     summary: Cleanup (deactivate) all expired links for the authenticated user
+ *     tags: [Link Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Expired links cleaned up successfully
+ */
+linkRouter.post('/cleanup-expired', linkController.cleanupExpiredLinks);
+
 export default linkRouter;

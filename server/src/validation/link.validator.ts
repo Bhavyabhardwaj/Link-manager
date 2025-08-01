@@ -48,9 +48,19 @@ export const linkExpirationUpdateValidator = z.object({
   })
 })
 
+export const linkPasswordValidator = z.object({
+  password: z.string().min(4, "Password must be at least 4 characters").max(50, "Password must be at most 50 characters")
+})
+
+export const linkPasswordAccessValidator = z.object({
+  password: z.string().min(1, "Password is required")
+})
+
 
 export type BioLinkInput = z.infer<typeof bioLinkValidator>;
 export type ShortLinkInput = z.infer<typeof shortLinkValidator>;
 export type LinkUpdateInput = z.infer<typeof linkUpdateValidator>;
 export type LinkExpirationInput = z.infer<typeof linkExpirationValidator>;
 export type LinkExpirationUpdateInput = z.infer<typeof linkExpirationUpdateValidator>;
+export type LinkPasswordInput = z.infer<typeof linkPasswordValidator>;
+export type LinkPasswordAccessInput = z.infer<typeof linkPasswordAccessValidator>;

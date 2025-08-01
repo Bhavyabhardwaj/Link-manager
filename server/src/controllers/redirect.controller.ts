@@ -74,15 +74,29 @@ export const redirectToOriginalUrl = async (req: Request, res: Response, next: N
         // Validate slug using Zod
         const { slug: validSlug } = redirectValidation.slugValidator.parse({ slug });
 
+        // Get password from query parameter if provided
+        const password = req.query.password as string;
+
         // Process redirect through service
         const result = await redirectService.processLinkRedirect(
             validSlug,
             userAgent,
             ip,
-            referrer
+            referrer,
+            password
         );
 
         if (!result.success) {
+            // If password is required, return a specific response
+            if (result.requiresPassword) {
+                res.status(401).json({
+                    status: "error",
+                    message: result.message,
+                    requiresPassword: true
+                });
+                return;
+            }
+
             res.status(404).json({
                 status: "error",
                 message: result.message,

@@ -461,4 +461,54 @@ linkRouter.get('/expired', linkController.getExpiredLinks);
  */
 linkRouter.post('/cleanup-expired', linkController.cleanupExpiredLinks);
 
+/**
+ * @swagger
+ * /api/links/{id}/verify-password:
+ *   post:
+ *     summary: Verify password for a password-protected link
+ *     tags: [Link Management]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Link ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: mySecretPassword
+ *     responses:
+ *       200:
+ *         description: Password verification result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Password is correct
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     valid:
+ *                       type: boolean
+ *                       example: true
+ *       404:
+ *         description: Link not found
+ */
+linkRouter.post('/:id/verify-password', linkController.verifyLinkPassword);
+
 export default linkRouter;

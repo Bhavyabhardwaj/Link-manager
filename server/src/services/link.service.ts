@@ -1,7 +1,7 @@
 import { linkValidation } from "../validation";
 import prisma from "../config/db";
-import { slugUtil } from "../utils";
-import { BadRequestError } from "../errors";
+import { slugUtil, bcryptUtil } from "../utils";
+import { BadRequestError, NotFoundError } from "../errors";
 import { QRCodeGenerator } from '../utils/qrCode';
 import { LinkType } from "../generated/prisma";
 
@@ -41,13 +41,20 @@ export const createShortLink = async (userId: string, linkData: linkValidation.S
         throw new BadRequestError("Expiration date must be in the future");
     }
 
+    // Hash password if provided
+    let hashedPassword = null;
+    if (linkData.password) {
+        hashedPassword = await bcryptUtil.generateHashPassword(linkData.password);
+    }
+
     return await prisma.link.create({
         data: {
             ...linkData,
             userId,
             type: LinkType.SHORT,
             slug,
-            order: null
+            order: null,
+            password: hashedPassword
         }
     })
 };
@@ -336,4 +343,21 @@ export const cleanupExpiredLinks = async (userId?: string) => {
         where,
         data: { active: false }
     });
+};
+
+// Verify password for password-protected links
+export const verifyLinkPassword = async (id: string, password: string): Promise<boolean> => {
+    const link = await prisma.link.findUnique({
+        where: { id },
+    });
+
+    if (!link) {
+        throw new NotFoundError('Link not found');
+    }
+
+    if (!link.password) {
+        return true; // No password protection
+    }
+
+    return await bcryptUtil.verifyPassword(password, link.password);
 };

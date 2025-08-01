@@ -27,11 +27,33 @@ export const processLinkRedirect = async (
     slug: string,
     userAgent: string,
     ip: string,
-    referrer?: string
+    referrer?: string,
+    password?: string
 ): Promise<RedirectResult> => {
     try {
         // Find the short link using the enhanced service with expiration checks
         const link = await linkService.getLinkWithExpiration(slug);
+
+        // Check if link is password protected
+        if (link.password) {
+            if (!password) {
+                return {
+                    success: false,
+                    message: "Password required",
+                    requiresPassword: true
+                };
+            }
+
+            // Verify the password
+            const isPasswordValid = await linkService.verifyLinkPassword(link.id, password);
+            if (!isPasswordValid) {
+                return {
+                    success: false,
+                    message: "Invalid password",
+                    requiresPassword: true
+                };
+            }
+        }
 
         // Increment click count
         await prisma.link.update({

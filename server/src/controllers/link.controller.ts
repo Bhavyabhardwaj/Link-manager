@@ -292,3 +292,20 @@ export const getLinkStatus = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+export const verifyLinkPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const validateData = linkValidation.linkPasswordAccessValidator.parse(req.body);
+    
+    const isValid = await linkService.verifyLinkPassword(id, validateData.password);
+    
+    res.status(200).json({
+      status: "success",
+      message: isValid ? "Password is correct" : "Invalid password",
+      data: { valid: isValid }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

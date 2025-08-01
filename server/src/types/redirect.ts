@@ -3,6 +3,7 @@ export interface RedirectResult {
     message: string;
     error?: string;
     redirectUrl?: string;
+    requiresPassword?: boolean;
 }
 
 export interface LinkInfoResult {
@@ -22,6 +23,11 @@ export interface linkInfoData {
     shortUrl: string;
     qrCode?: string;
     clickCount: number;
+    isExpired?: boolean;
+    isClickLimitReached?: boolean;
+    isAccessible?: boolean;
+    remainingClicks?: number | null;
+    daysUntilExpiration?: number | null;
 }
 
 export interface LinkStatsResult {

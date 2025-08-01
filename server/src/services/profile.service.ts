@@ -40,8 +40,9 @@ export const getUserBioPage = async (username: string) => {
         throw new NotFoundError("Profile not found or private");
     }
 
+    // return user with click counts
     return {
-        ...user,
+        ...user, // spread user properties
         links: user.links.map(link => ({
             ...link,
             clickCount: link._count.linkClicks

@@ -20,7 +20,7 @@ export const createBioLink = async (userId: string, linkData: linkValidation.Bio
             userId,
             type: LinkType.BIO,
             order: linkData.order ?? nextOrder,
-            slug: null // bio links do not use slugs
+            slug: null
         }
     });
 }
@@ -36,15 +36,13 @@ export const createShortLink = async (userId: string, linkData: linkValidation.S
         }
     }
 
-    const shortUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/${slug}`;
-
     return await prisma.link.create({
         data: {
             ...linkData,
             userId,
             type: LinkType.SHORT,
             slug,
-            order: null   // don't need order
+            order: null
         }
     })
 };
@@ -74,15 +72,17 @@ export const getShortLinks = async(userId: string) => {
             type: LinkType.SHORT,
             active: true
         },
-        orderBy: { createdAt: 'desc'},
+        orderBy: { 
+            createdAt: 'desc'
+        },
         include: {
             _count: {
                 select: { linkClicks: true }
+            }
         }
-    }});
+    });
 }
 
-// Fetches a single active link by its ID and user ID
 export const getLinkById = async (linkId: string, userId: string) => {
     const link = await prisma.link.findUnique({
         where: {
@@ -93,7 +93,6 @@ export const getLinkById = async (linkId: string, userId: string) => {
     });
     return link;
 }
-// Updates an active link by its ID and user ID
 export const updateLink = async (linkId: string, userId: string, updateData: Partial<linkValidation.LinkUpdateInput>) => {
     const updatedLink = await prisma.link.update({
         where: {
@@ -105,7 +104,6 @@ export const updateLink = async (linkId: string, userId: string, updateData: Par
     return updatedLink;
 }
 
-// Soft-deletes a link by setting its active flag to false
 export const deleteLink = async (linkId: string, userId: string) => {
     const deletedLink = await prisma.link.update({
         where: {
@@ -120,7 +118,6 @@ export const deleteLink = async (linkId: string, userId: string) => {
     return deletedLink;
 }
 
-// Reorders links for a user based on the provided order of link IDs
 export const reorderLinks = async (userId: string, linkIds: string[]) => {
     const links = await prisma.link.findMany({
         where: {
@@ -162,10 +159,8 @@ export const generateQrCode = async (linkId: string, userId: string) => {
         throw new BadRequestError("Link not found");
     }
 
-    // Generate QR code URL using a library like qrcode
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(link.url)}&size=200x200`;
 
-    // Update the link with the QR code URL
     const updatedLink = await prisma.link.update({
         where: { id: link.id },
         data: { qrCode: qrCodeUrl }
@@ -174,7 +169,6 @@ export const generateQrCode = async (linkId: string, userId: string) => {
     return updatedLink;
 }
 
-// Add to link creation
 export const generateQRCode = async (url: string): Promise<string> => {
     const qr = require('qrcode');
     return await qr.toDataURL(url);

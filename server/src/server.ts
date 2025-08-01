@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import { errorHandler } from "./middlewares";
 import cors from "cors";
 import router from "./routes";
-import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
 import passport from "passport";
 import cookieSession from "cookie-session";
+import { errorHandler } from "./middlewares";
+import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
 import './config/passportGithub';
 import './config/passportGoogle';
 

@@ -4,9 +4,10 @@ import { bcryptUtil, jwtUtil, emailUtil } from "../utils";
 import { authValidation } from "../validation";
 import crypto from "crypto";
 
-
+// This file contains the authentication service logic
 export const signIn = async({username, password}: authValidation.SigninInput)=> {
-
+    
+    // Check if user exists
     const user = await prisma.user.findUnique({
         where: {
             username
@@ -15,7 +16,8 @@ export const signIn = async({username, password}: authValidation.SigninInput)=> 
     if (!user) {
         throw new NotFoundError("User not found");
     }
-    
+
+    // Verify password
     const isPasswordValid = await bcryptUtil.verifyPassword(password, user.password);
 
     if (!isPasswordValid) {
@@ -33,7 +35,8 @@ export const signIn = async({username, password}: authValidation.SigninInput)=> 
         },
         expiresIn: "1d"
     }
-    
+
+    // Generate JWT token
     const token = jwtUtil.generateToken(payload);
     return {
         user: userWithoutPassword,
@@ -53,7 +56,8 @@ export const signUp = async({username, password, email}: authValidation.SignupIn
     if (existingUser) {
         throw new BadRequestError("User already exists");
     }
-    
+
+    // hash the password
     const hashedPassword = await bcryptUtil.generateHashPassword(password);
 
     const newUser = await prisma.user.create({
@@ -70,8 +74,9 @@ export const signUp = async({username, password, email}: authValidation.SignupIn
             username: newUser.username
         },
         expiresIn: "1d"
-    }
+    };
 
+    // Generate JWT token
     const token = jwtUtil.generateToken(payload)
 
     return {   
@@ -89,7 +94,7 @@ export const forgotPassword = async ({ email }: authValidation.ForgotPasswordInp
     });
 
     if (!user) {
-        // For security, don't reveal if email exists
+        // don't reveal if email exists
         return {
             message: "If an account with that email exists, we sent a password reset link."
         };

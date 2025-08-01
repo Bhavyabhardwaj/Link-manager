@@ -6,6 +6,7 @@ import passport from "passport";
 import cookieSession from "cookie-session";
 import { errorHandler } from "./middlewares";
 import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
+import { schedulerUtil } from "./utils";
 import './config/passportGithub';
 import './config/passportGoogle';
 
@@ -45,4 +46,7 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  
+  // Initialize scheduled tasks for link management
+  schedulerUtil.initializeScheduledTasks();
 });

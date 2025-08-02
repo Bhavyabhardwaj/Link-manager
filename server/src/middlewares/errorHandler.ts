@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "../errors";
+import { EnvironmentConfig } from "../config/environment";
+import { Logger } from "../utils";
 
 export const errorHandler = (
   error: Error,
@@ -7,8 +9,14 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  // Log error for debugging (in production, use proper logging service)
-  console.error("Error:", error);
+  // Log error for debugging with proper logger
+  Logger.error("Request error occurred", {
+    message: error.message,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
 
   // Handle custom errors
   if (error instanceof CustomError) {
@@ -50,7 +58,7 @@ export const errorHandler = (
   // Default error handler
   res.status(500).json({
     status: "error",
-    message: process.env.NODE_ENV === "production" 
+    message: EnvironmentConfig.NODE_ENV === "production" 
       ? "Internal server error" 
       : error.message,
   });

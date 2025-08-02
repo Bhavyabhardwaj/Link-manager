@@ -1,15 +1,16 @@
 import { NotFoundError } from "../errors";
 import { linkService } from "../services";
-import { Response, Request, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
+import { AuthenticatedRequest } from "../types";
 import { slugUtil } from "../utils";
 import { QRCodeGenerator } from '../utils/qrCode';
 import { linkValidation } from "../validation";
 
 // Controller functions for handling link-related API requests
 
-export const createBioLink = async (req: Request, res: Response, next: NextFunction) => {
+export const createBioLink = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const validateData = linkValidation.bioLinkValidator.parse(req.body);
     const bioLink = await linkService.createBioLink(userId, validateData);
     res.status(201).json({
@@ -22,9 +23,9 @@ export const createBioLink = async (req: Request, res: Response, next: NextFunct
   };
 };
 
-export const createShortLink = async (req: Request, res: Response, next: NextFunction) => {
+export const createShortLink = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const validateData = linkValidation.shortLinkValidator.parse(req.body);
     const shortLink = await linkService.createShortLink(userId, validateData);
     res.status(201).json({
@@ -40,9 +41,9 @@ export const createShortLink = async (req: Request, res: Response, next: NextFun
   }
 };
 
-export const getBioLinks = async (req: Request, res: Response, next: NextFunction) => {
+export const getBioLinks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const bioLinks = await linkService.getBioLinks(userId);
     res.status(200).json({
       status: "success",
@@ -54,9 +55,9 @@ export const getBioLinks = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const getShortLinks = async (req: Request, res: Response, next: NextFunction) => {
+export const getShortLinks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const shortLinks = await linkService.getShortLinks(userId);
     res.status(200).json({
       status: "success",
@@ -75,13 +76,13 @@ export const getShortLinks = async (req: Request, res: Response, next: NextFunct
 
 // Handles fetching a single link by its ID for the authenticated user
 export const getLinkById = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const linkId = req.params.id;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const link = await linkService.getLinkById(linkId, userId);
     if (!link) {
       throw new NotFoundError("Link not found");
@@ -98,10 +99,10 @@ export const getLinkById = async (
 };
 
 // Handles updating a link by its ID for the authenticated user
-export const updateLink = async (req: Request, res: Response, next: NextFunction) => {
+export const updateLink = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const linkId = req.params.id;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const updateData = req.body;
     const updatedLink = await linkService.updateLink(linkId, userId, updateData);
     res.status(200).json({
@@ -115,10 +116,10 @@ export const updateLink = async (req: Request, res: Response, next: NextFunction
 }
 
 // Handles soft-deleting a link by its ID for the authenticated user
-export const deleteLink = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteLink = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const linkId = req.params.id;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const deletedLink = await linkService.deleteLink(linkId, userId);
     res.status(200).json({
       status: "success",
@@ -131,9 +132,9 @@ export const deleteLink = async (req: Request, res: Response, next: NextFunction
 }
 
 // Handles reordering of links for the authenticated user
-export const reorderLinks = async (req: Request, res: Response, next: NextFunction) => {
+export const reorderLinks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const { linkIds } = req.body;
     const reorderedLinks = await linkService.reorderLinks(userId, linkIds);
     res.status(200).json({
@@ -146,11 +147,11 @@ export const reorderLinks = async (req: Request, res: Response, next: NextFuncti
   }
 }
 
-export const getQRCode = async (req: Request, res: Response, next: NextFunction) => {
+export const getQRCode = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { format = 'png', size = 200 } = req.query;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
 
     const link = await linkService.getLinkById(id, userId);
     if (!link) return res.status(404).json({ error: 'Link not found' });
@@ -177,7 +178,7 @@ export const getQRCode = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export const regenerateQRCode = async (req: Request, res: Response, next: NextFunction) => {
+export const regenerateQRCode = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const options = req.body;
@@ -194,10 +195,10 @@ export const regenerateQRCode = async (req: Request, res: Response, next: NextFu
 };
 
 // Link expiration controllers
-export const extendLinkExpiration = async (req: Request, res: Response, next: NextFunction) => {
+export const extendLinkExpiration = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const { expiresAt } = linkValidation.linkExpirationValidator.parse(req.body);
 
     const updatedLink = await linkService.extendLinkExpiration(id, userId, expiresAt);
@@ -212,10 +213,10 @@ export const extendLinkExpiration = async (req: Request, res: Response, next: Ne
   }
 };
 
-export const removeLinkExpiration = async (req: Request, res: Response, next: NextFunction) => {
+export const removeLinkExpiration = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
 
     const updatedLink = await linkService.removeExpiration(id, userId);
     
@@ -229,9 +230,9 @@ export const removeLinkExpiration = async (req: Request, res: Response, next: Ne
   }
 };
 
-export const getExpiredLinks = async (req: Request, res: Response, next: NextFunction) => {
+export const getExpiredLinks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const expiredLinks = await linkService.getExpiredLinks(userId);
     
     res.status(200).json({
@@ -244,9 +245,9 @@ export const getExpiredLinks = async (req: Request, res: Response, next: NextFun
   }
 };
 
-export const cleanupExpiredLinks = async (req: Request, res: Response, next: NextFunction) => {
+export const cleanupExpiredLinks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const result = await linkService.cleanupExpiredLinks(userId);
     
     res.status(200).json({
@@ -259,10 +260,10 @@ export const cleanupExpiredLinks = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const getLinkStatus = async (req: Request, res: Response, next: NextFunction) => {
+export const getLinkStatus = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user.id;
+    const userId = req.user.id;
     const link = await linkService.getLinkById(id, userId);
     
     if (!link) {
@@ -293,7 +294,7 @@ export const getLinkStatus = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const verifyLinkPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyLinkPassword = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const validateData = linkValidation.linkPasswordAccessValidator.parse(req.body);

@@ -61,11 +61,14 @@ export const processLinkRedirect = async (
             data: { clickCount: { increment: 1 } }
         });
 
-        // Track the click asynchronously
-        trackLinkClick(link.id, userAgent, ip, referrer).catch(error => {
-            console.error("Failed to track click:", error);
-            // Don't fail the redirect if tracking fails
-        });
+        // Track the click with proper error handling
+        try {
+            await trackLinkClick(link.id, userAgent, ip, referrer);
+        } catch (trackingError) {
+            // Log error but don't fail the redirect - tracking is non-critical
+            console.error("Click tracking failed (non-critical):", trackingError);
+            // Could also send to error monitoring service here
+        }
 
         return {
             success: true,

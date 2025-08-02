@@ -45,11 +45,25 @@ export const scheduleLinkSummary = () => {
     });
 };
 
+// Clean up links that have reached their click limit
+export const scheduleClickLimitCleanup = () => {
+    cron.schedule('0 1 * * *', async () => {
+        try {
+            console.log('🔢 Starting click limit cleanup task...');
+            const result = await linkService.cleanupClickLimitReachedLinks();
+            console.log(`✅ Deactivated ${result.count} links that reached click limit`);
+        } catch (error) {
+            console.error('❌ Error during click limit cleanup:', error);
+        }
+    });
+};
+
 // Initialize all scheduled tasks
 export const initializeScheduledTasks = () => {
     console.log('🕐 Initializing scheduled tasks...');
     scheduleExpiredLinkCleanup();
     scheduleExpirationWarnings();
     scheduleLinkSummary();
+    scheduleClickLimitCleanup();
     console.log('✅ All scheduled tasks initialized');
 };

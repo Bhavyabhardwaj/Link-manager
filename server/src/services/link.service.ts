@@ -345,6 +345,39 @@ export const cleanupExpiredLinks = async (userId?: string) => {
     });
 };
 
+// Cleanup links that have reached their click limit
+export const cleanupClickLimitReachedLinks = async (userId?: string) => {
+    // First, find links that have reached their click limit
+    const linksToDeactivate = await prisma.link.findMany({
+        where: {
+            active: true,
+            clickLimit: { not: null },
+            userId: userId || undefined
+        },
+        select: {
+            id: true,
+            clickCount: true,
+            clickLimit: true
+        }
+    });
+
+    // Filter links where clickCount >= clickLimit
+    const linkIdsToDeactivate = linksToDeactivate
+        .filter(link => link.clickLimit && link.clickCount >= link.clickLimit)
+        .map(link => link.id);
+
+    if (linkIdsToDeactivate.length === 0) {
+        return { count: 0 };
+    }
+
+    return await prisma.link.updateMany({
+        where: {
+            id: { in: linkIdsToDeactivate }
+        },
+        data: { active: false }
+    });
+};
+
 // Verify password for password-protected links
 export const verifyLinkPassword = async (id: string, password: string): Promise<boolean> => {
     const link = await prisma.link.findUnique({

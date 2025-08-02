@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { linkService } from '../services';
+import Logger from './logger';
 
 /**
  * Scheduled tasks for link management
@@ -9,11 +10,11 @@ import { linkService } from '../services';
 export const scheduleExpiredLinkCleanup = () => {
     cron.schedule('0 0 * * *', async () => {
         try {
-            console.log('🧹 Starting expired link cleanup task...');
+            Logger.info('Starting expired link cleanup task');
             const result = await linkService.cleanupExpiredLinks();
-            console.log(`✅ Cleaned up ${result.count} expired links`);
+            Logger.info(`Cleaned up ${result.count} expired links`);
         } catch (error) {
-            console.error('❌ Error during expired link cleanup:', error);
+            Logger.error('Error during expired link cleanup', error);
         }
     });
 };
@@ -22,12 +23,12 @@ export const scheduleExpiredLinkCleanup = () => {
 export const scheduleExpirationWarnings = () => {
     cron.schedule('0 9 * * *', async () => {
         try {
-            console.log('⚠️ Checking for links expiring soon...');
+            Logger.info('Checking for links expiring soon');
             // Implementation for sending warnings would go here
             // This could send emails to users about links expiring in 3 days
-            console.log('✅ Expiration warnings processed');
+            Logger.info('Expiration warnings processed');
         } catch (error) {
-            console.error('❌ Error during expiration warning task:', error);
+            Logger.error('Error during expiration warning task', error);
         }
     });
 };
@@ -36,11 +37,11 @@ export const scheduleExpirationWarnings = () => {
 export const scheduleLinkSummary = () => {
     cron.schedule('0 9 * * 1', async () => {
         try {
-            console.log('📊 Generating weekly link summary...');
+            Logger.info('Generating weekly link summary');
             // Implementation for weekly summaries would go here
-            console.log('✅ Weekly link summary generated');
+            Logger.info('Weekly link summary generated');
         } catch (error) {
-            console.error('❌ Error during weekly summary task:', error);
+            Logger.error('Error during weekly summary task', error);
         }
     });
 };
@@ -49,21 +50,21 @@ export const scheduleLinkSummary = () => {
 export const scheduleClickLimitCleanup = () => {
     cron.schedule('0 1 * * *', async () => {
         try {
-            console.log('🔢 Starting click limit cleanup task...');
+            Logger.info('Starting click limit cleanup task');
             const result = await linkService.cleanupClickLimitReachedLinks();
-            console.log(`✅ Deactivated ${result.count} links that reached click limit`);
+            Logger.info(`Deactivated ${result.count} links that reached click limit`);
         } catch (error) {
-            console.error('❌ Error during click limit cleanup:', error);
+            Logger.error('Error during click limit cleanup', error);
         }
     });
 };
 
 // Initialize all scheduled tasks
 export const initializeScheduledTasks = () => {
-    console.log('🕐 Initializing scheduled tasks...');
+    Logger.info('Initializing scheduled tasks');
     scheduleExpiredLinkCleanup();
     scheduleExpirationWarnings();
     scheduleLinkSummary();
     scheduleClickLimitCleanup();
-    console.log('✅ All scheduled tasks initialized');
+    Logger.info('All scheduled tasks initialized');
 };

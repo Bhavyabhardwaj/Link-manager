@@ -17,9 +17,9 @@ const LandingPage: React.FC = () => {
             <Link to="/login" className="text-gray-600 hover:text-gray-900">
               Sign In
             </Link>
-            <Button asChild>
-              <Link to="/register">Get Started</Link>
-            </Button>
+            <Link to="/register">
+              <Button>Get Started</Button>
+            </Link>
           </div>
         </nav>
       </header>
@@ -37,14 +37,14 @@ const LandingPage: React.FC = () => {
           and shorten URLs with custom slugs. Like Linktree, but better.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" asChild>
-            <Link to="/register">
+          <Link to="/register">
+            <Button size="lg">
               Start Free <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/demo">View Demo</Link>
-          </Button>
+            </Button>
+          </Link>
+          <Link to="/demo">
+            <Button variant="outline" size="lg">View Demo</Button>
+          </Link>
         </div>
       </section>
 
@@ -131,11 +131,11 @@ const LandingPage: React.FC = () => {
           <p className="text-lg text-gray-600 mb-8">
             Join thousands of creators, businesses, and individuals who trust LinkManager
           </p>
-          <Button size="lg" asChild>
-            <Link to="/register">
+          <Link to="/register">
+            <Button size="lg">
               Get Started for Free <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </section>
 

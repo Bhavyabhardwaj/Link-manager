@@ -26,11 +26,18 @@ export class EnvironmentConfig {
   static readonly GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
   static readonly GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
+  // Frontend configuration
+  static readonly FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+
   // Email configuration
   static readonly EMAIL_HOST = process.env.EMAIL_HOST;
   static readonly EMAIL_PORT = process.env.EMAIL_PORT;
   static readonly EMAIL_USER = process.env.EMAIL_USER;
   static readonly EMAIL_PASS = process.env.EMAIL_PASS;
+  static readonly EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@linkmanager.com';
+
+  // IP Info configuration
+  static readonly IP_INFO_TOKEN = process.env.IP_INFO_TOKEN;
 
   // Validate required environment variables
   static validateConfig(): void {

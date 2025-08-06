@@ -2,7 +2,6 @@ import { Response, Request, NextFunction } from "express";
 import { authService } from "../services";
 import { signIn } from "../services/auth.service";
 import { authValidation } from "../validation";
-import { AuthenticatedRequest } from "../types";
 
 export const handleSignIn = async(req: Request, res: Response, next: NextFunction) => {
     const {username, password}: authValidation.SigninInput = req.body;
@@ -37,11 +36,11 @@ export const handleSignUp = async(req: Request, res: Response, next: NextFunctio
 }
 
 
-export const verifyToken = async (req: AuthenticatedRequest, res: Response) => {
+export const verifyToken = async (req: Request, res: Response) => {
     res.status(200).json({
         success : true,
         message : "Verified user",
-        user: req.user
+        user: (req as any).user
     });
 }
 

@@ -1,9 +1,9 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { jwtUtil } from "../utils";
 import { UnauthorizedError } from "../errors";
 import { AuthenticatedRequest } from "../types";
 
-export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     const token = (req.headers.authorization)?.split(" ")[1];
 
     if (!token) {
@@ -12,7 +12,7 @@ export const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: 
 
     try {
         const { data } = jwtUtil.verifyToken(token);
-        req.user = data as any; // Cast to user object from JWT payload
+        (req as AuthenticatedRequest).user = data as any; // Cast to user object from JWT payload
         next();
     } catch (error) {
         next(error);

@@ -147,8 +147,7 @@ export const reorderLinks = async (userId: string, linkIds: string[]) => {
     const updatedLinks = await Promise.all(links.map((link, index) => {
         return prisma.link.update({
             where: {
-                id: link.id,
-                userId
+                id: link.id
             },
             data: {
                 order: index

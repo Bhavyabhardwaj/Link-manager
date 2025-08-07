@@ -17,7 +17,7 @@ export const createBioLink = async (userId: string, linkData: linkValidation.Bio
     return await prisma.link.create({
         data: {
             ...linkData,
-            userId,
+            user: { connect: { id: userId } },
             type: LinkType.BIO,
             order: linkData.order ?? nextOrder,
             slug: null
@@ -50,7 +50,7 @@ export const createShortLink = async (userId: string, linkData: linkValidation.S
     return await prisma.link.create({
         data: {
             ...linkData,
-            userId,
+            user: { connect: { id: userId } },
             type: LinkType.SHORT,
             slug,
             order: null,
@@ -59,7 +59,7 @@ export const createShortLink = async (userId: string, linkData: linkValidation.S
     })
 };
 
-export const getBioLinks = async(userId: string) => {
+export const getBioLinks = async (userId: string) => {
     return await prisma.link.findMany({
         where: {
             userId,
@@ -77,14 +77,14 @@ export const getBioLinks = async(userId: string) => {
     });
 }
 
-export const getShortLinks = async(userId: string) => {
+export const getShortLinks = async (userId: string) => {
     return await prisma.link.findMany({
         where: {
             userId,
             type: LinkType.SHORT,
             active: true
         },
-        orderBy: { 
+        orderBy: {
             createdAt: 'desc'
         },
         include: {
@@ -147,7 +147,8 @@ export const reorderLinks = async (userId: string, linkIds: string[]) => {
     const updatedLinks = await Promise.all(links.map((link, index) => {
         return prisma.link.update({
             where: {
-                id: link.id
+                id: link.id,
+                userId
             },
             data: {
                 order: index

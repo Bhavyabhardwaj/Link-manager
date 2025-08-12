@@ -112,6 +112,35 @@ class ApiClient {
     return result
   }
 
+  async updateBioLink(id: string, data: any) {
+    const result = await this.request(`/api/links/update-link/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+    // Clear bio links cache
+    this.clearCacheByPattern('/api/links/bio')
+    return result
+  }
+
+  async deleteBioLink(id: string) {
+    const result = await this.request(`/api/links/delete-link/${id}`, {
+      method: 'DELETE',
+    })
+    // Clear bio links cache
+    this.clearCacheByPattern('/api/links/bio')
+    return result
+  }
+
+  async reorderBioLinks(linkIds: string[]) {
+    const result = await this.request('/api/links/reorder-links', {
+      method: 'PATCH',
+      body: JSON.stringify({ linkIds }),
+    })
+    // Clear bio links cache
+    this.clearCacheByPattern('/api/links/bio')
+    return result
+  }
+
   async updateLink(id: string, data: any) {
     const result = await this.request(`/api/links/update-link/${id}`, {
       method: 'PUT',
@@ -185,6 +214,11 @@ class ApiClient {
   // Public Profile
   async getPublicProfile(username: string) {
     return this.request(`/u/${username}`, {}, true, 120000) // Cache for 2 minutes
+  }
+
+  // Public Bio Page
+  async getPublicBioPage(username: string) {
+    return this.request(`/api/profile/${username}`, {}, true, 120000) // Cache for 2 minutes
   }
 
   // Public Link (for slug redirects)

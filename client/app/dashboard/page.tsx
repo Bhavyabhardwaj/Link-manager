@@ -71,28 +71,24 @@ export default function DashboardPage() {
         {
           title: "Total Clicks",
           value: analytics.totalClicks || 0,
-          change: "+12.5%",
           icon: BarChart3,
           color: "text-primary",
         },
         {
           title: "Active Links",
           value: analytics.totalLinks || 0,
-          change: "+3",
           icon: Link2,
           color: "text-secondary",
         },
         {
           title: "QR Scans",
           value: analytics.totalQRScans || 0,
-          change: "+8.2%",
           icon: QrCode,
           color: "text-accent",
         },
         {
           title: "Bio Views",
           value: analytics.totalBioViews || 0,
-          change: "+15.3%",
           icon: Users,
           color: "text-orange-500",
         },
@@ -159,9 +155,6 @@ export default function DashboardPage() {
                           <span className="text-2xl font-bold">
                             <AnimatedCounter end={stat.value} />
                           </span>
-                          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                            {stat.change}
-                          </Badge>
                         </div>
                       </div>
                       <div className="p-3 rounded-lg bg-primary/10">

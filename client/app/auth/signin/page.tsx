@@ -103,18 +103,6 @@ export default function SigninPage() {
             <CardDescription>Sign in to your LinkCraft account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Test Credentials Alert */}
-            <Alert className="bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
-              <Sparkles className="h-4 w-4 text-yellow-600" />
-              <AlertDescription className="text-yellow-800 dark:text-yellow-200">
-                <strong>Test Account:</strong>
-                <br />
-                Email: test@linkcraft.com
-                <br />
-                Password: Test123!
-              </AlertDescription>
-            </Alert>
-
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"

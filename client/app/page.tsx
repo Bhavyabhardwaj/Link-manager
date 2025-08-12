@@ -102,7 +102,7 @@ const SimpleDashboard = memo(() => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold">Dashboard</h3>
-              <p className="text-sm text-muted-foreground">Welcome back, Sarah</p>
+              <p className="text-sm text-muted-foreground">Welcome back!</p>
             </div>
             <Button size="sm" className="bg-primary hover:bg-primary/90">
               Create Link
@@ -113,19 +113,19 @@ const SimpleDashboard = memo(() => {
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-muted rounded-lg p-4">
               <div className="text-2xl font-bold">
-                <AnimatedCounter end={12847} />
+                <AnimatedCounter end={0} />
               </div>
               <div className="text-xs text-muted-foreground">Total Clicks</div>
             </div>
             <div className="bg-muted rounded-lg p-4">
               <div className="text-2xl font-bold">
-                <AnimatedCounter end={24} />
+                <AnimatedCounter end={0} />
               </div>
               <div className="text-xs text-muted-foreground">Active Links</div>
             </div>
             <div className="bg-muted rounded-lg p-4">
               <div className="text-2xl font-bold">
-                <AnimatedCounter end={1893} />
+                <AnimatedCounter end={0} />
               </div>
               <div className="text-xs text-muted-foreground">QR Scans</div>
             </div>
@@ -133,7 +133,7 @@ const SimpleDashboard = memo(() => {
 
           {/* Chart Placeholder */}
           <div className="h-32 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg flex items-end justify-between p-4">
-            {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
+            {[10, 15, 12, 20, 16, 25, 18].map((height, i) => (
               <div
                 key={i}
                 style={{ height: `${height}%` }}

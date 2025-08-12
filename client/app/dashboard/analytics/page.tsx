@@ -224,28 +224,24 @@ export default function AnalyticsPage() {
     {
       title: "Total Clicks",
       value: analytics.overview.totalClicks,
-      change: "+12.5%",
       icon: BarChart3,
       color: "text-blue-500",
     },
     {
       title: "Active Links",
       value: analytics.overview.totalLinks,
-      change: "+3",
       icon: ExternalLink,
       color: "text-green-500",
     },
     {
       title: "Bio Views",
       value: analytics.overview.totalBioViews,
-      change: "+15.3%",
       icon: Users,
       color: "text-purple-500",
     },
     {
       title: "Avg Daily Clicks",
       value: analytics.overview.avgClicksPerDay,
-      change: "+8.2%",
       icon: TrendingUp,
       color: "text-orange-500",
     },
@@ -299,9 +295,6 @@ export default function AnalyticsPage() {
                         <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="text-2xl font-bold">{(stat.value || 0).toLocaleString()}</span>
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
-                            {stat.change}
-                          </Badge>
                         </div>
                       </div>
                       <div className="p-3 rounded-lg bg-primary/10">
@@ -549,9 +542,6 @@ export default function AnalyticsPage() {
                         {(analytics.overview.conversionRate || 0).toFixed(1)}%
                       </div>
                       <p className="text-sm text-muted-foreground">Average conversion rate</p>
-                      <Badge variant="secondary" className="mt-2 bg-green-100 text-green-700">
-                        +2.3% from last period
-                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -584,9 +574,6 @@ export default function AnalyticsPage() {
                         {(analytics.overview.clicksToday || 0).toLocaleString()}
                       </div>
                       <p className="text-sm text-muted-foreground">Clicks today</p>
-                      <Badge variant="secondary" className="mt-2 bg-blue-100 text-blue-700">
-                        +15% vs yesterday
-                      </Badge>
                     </div>
                   </CardContent>
                 </Card>

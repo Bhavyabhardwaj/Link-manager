@@ -20,6 +20,18 @@ export const metadata: Metadata = {
     "Create beautiful bio pages, shorten URLs, and track analytics. Built for creators and professionals.",
   keywords: ["link manager", "bio links", "url shortener", "analytics", "creator tools"],
   authors: [{ name: "Link Manager Team" }],
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/placeholder-icon.png', type: 'image/png', sizes: '32x32' }
+    ],
+    shortcut: [
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ],
+  },
   openGraph: {
     title: "Link Manager - Powerful Link Management & Analytics",
     description:

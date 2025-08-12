@@ -146,8 +146,13 @@ export default function ShortLinksPage() {
   const loadShortLinks = async () => {
     try {
       const response = await apiClient.getShortLinks()
-      setLinks(response.data || [])
+      // Ensure response.data is an array
+      const linksData = Array.isArray(response.data) ? response.data : []
+      setLinks(linksData)
     } catch (error) {
+      console.error('Failed to load short links:', error)
+      // Set empty array on error to prevent filter issues
+      setLinks([])
       toast({
         title: "Failed to load short links",
         description: "There was an error loading your short links.",
@@ -364,15 +369,15 @@ export default function ShortLinksPage() {
     return (link.clicks / link.clickLimit) * 100
   }
 
-  const filteredLinks = links.filter(
+  const filteredLinks = Array.isArray(links) ? links.filter(
     (link) =>
       link.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       link.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
       link.slug.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  ) : []
 
-  const totalClicks = links.reduce((sum, link) => sum + link.clicks, 0)
-  const activeLinks = links.filter((link) => link.active && link.status === "active").length
+  const totalClicks = Array.isArray(links) ? links.reduce((sum, link) => sum + link.clicks, 0) : 0
+  const activeLinks = Array.isArray(links) ? links.filter((link) => link.active && link.status === "active").length : 0
 
   if (loading) {
     return (

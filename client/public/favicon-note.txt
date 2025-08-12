@@ -1,0 +1,5 @@
+# Link Manager Favicon
+
+This is a placeholder for the favicon.ico file. In a real application, you would place a proper ICO file here.
+
+For now, we're using the SVG icon defined in the layout metadata.

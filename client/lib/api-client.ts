@@ -1,6 +1,6 @@
 'use client'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://144.24.131.152:3000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 // API client with caching and performance optimizations
 class ApiClient {

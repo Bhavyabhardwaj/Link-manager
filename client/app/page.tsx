@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
@@ -14,101 +14,66 @@ import {
   Globe,
   Cpu,
   Star,
+  Link as LinkIcon,
+  Play,
+  CheckCircle,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-function MarqueeBar() {
-  const items = [
-    "TechCrunch",
-    "GitHub",
-    "Figma",
-    "Stripe",
-    "AWS",
-    "Netlify",
-    "Vercel",
-    "Notion",
-    "Linear",
-  ];
+// Modern SaaS Navigation
+function Navigation() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="overflow-hidden whitespace-nowrap py-1 bg-zinc-900/30 rounded-md select-none mt-12">
-      <motion.div
-        className="inline-flex text-sm font-semibold text-white gap-x-12"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-      >
-        {[...items, ...items].map((item, i) => (
-          <span key={`${item}-${i}`} className="px-2 select-none cursor-default">
-            {item}
+    <motion.nav 
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'backdrop-blur-xl bg-black/80 border-b border-white/10' : 'bg-transparent'
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity" />
+            <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 p-2.5 rounded-xl">
+              <LinkIcon className="w-5 h-5 text-white" />
+            </div>
+          </div>
+          <span className="font-bold text-xl bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+            LinkWeaver
           </span>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
-function Dock() {
-  const navItems = ["Platform", "Solutions", "Developers", "Enterprise"];
-  return (
-    <nav aria-label="Primary navigation" className="hidden md:flex space-x-8 text-zinc-400 text-sm">
-      {navItems.map((item) => (
-        <Link
-          href={`/${item.toLowerCase()}`}
-          key={item}
-          className="relative group px-2 py-1 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
-        >
-          {item}
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-400 to-purple-600 transition-all group-hover:w-full" />
         </Link>
-      ))}
-    </nav>
-  );
-}
 
-function AvatarCircles() {
-  const avatars = [
-    "https://randomuser.me/api/portraits/women/68.jpg",
-    "https://randomuser.me/api/portraits/men/31.jpg",
-    "https://randomuser.me/api/portraits/women/13.jpg",
-    "https://randomuser.me/api/portraits/men/45.jpg",
-    "https://randomuser.me/api/portraits/women/22.jpg",
-  ];
+        <div className="hidden md:flex items-center space-x-8">
+          <Link href="/features" className="text-slate-300 hover:text-white transition-colors font-medium">Features</Link>
+          <Link href="/pricing" className="text-slate-300 hover:text-white transition-colors font-medium">Pricing</Link>
+          <Link href="/docs" className="text-slate-300 hover:text-white transition-colors font-medium">Docs</Link>
+        </div>
 
-  return (
-    <ul role="list" className="flex -space-x-4" aria-label="User avatars">
-      {avatars.map((src, idx) => (
-        <li key={idx}>
-          <img
-            src={src}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-black select-none"
-          />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function RippleButton({ href, children, variant = "primary" }) {
-  return (
-    <Link href={href} className="relative inline-block rounded-md overflow-hidden">
-      <span
-        aria-hidden="true"
-        className={`absolute inset-0 ${
-          variant === "primary" ? "bg-gradient-to-r from-indigo-500 to-purple-600" : "bg-gray-700"
-        } transition-transform origin-center scale-100 animate-ping-slow rounded-md`}
-        style={{ animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
-      />
-      <span
-        className={`relative z-10 inline-flex items-center justify-center rounded-md px-6 py-3 ${
-          variant === "primary" ? "text-white" : "text-gray-200"
-        } font-semibold`}
-      >
-        {children}
-      </span>
-    </Link>
+        <div className="flex items-center space-x-4">
+          <ThemeToggle />
+          <Button variant="ghost" asChild className="text-slate-300 hover:text-white">
+            <Link href="/auth/signin">Sign in</Link>
+          </Button>
+          <Button asChild className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
+            <Link href="/auth/signup">Get Started <ArrowRight className="ml-2 w-4 h-4" /></Link>
+          </Button>
+        </div>
+      </div>
+    </motion.nav>
   );
 }
 

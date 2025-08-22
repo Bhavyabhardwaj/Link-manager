@@ -72,25 +72,25 @@ export default function DashboardPage() {
           title: "Total Clicks",
           value: analytics.totalClicks || 0,
           icon: BarChart3,
-          color: "text-primary",
+          color: "text-blue-600 dark:text-blue-400",
         },
         {
           title: "Active Links",
           value: analytics.totalLinks || 0,
           icon: Link2,
-          color: "text-secondary",
+          color: "text-green-600 dark:text-green-400",
         },
         {
           title: "QR Scans",
           value: analytics.totalQRScans || 0,
           icon: QrCode,
-          color: "text-accent",
+          color: "text-purple-600 dark:text-purple-400",
         },
         {
           title: "Bio Views",
           value: analytics.totalBioViews || 0,
           icon: Users,
-          color: "text-orange-500",
+          color: "text-orange-600 dark:text-orange-400",
         },
       ]
     : []
@@ -128,10 +128,12 @@ export default function DashboardPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Welcome back, {user?.name?.split(" ")[0] || "there"}!</h1>
-              <p className="text-muted-foreground">Here's what's happening with your links today.</p>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                Welcome back, {user?.name?.split(" ")[0] || "there"}!
+              </h1>
+              <p className="text-muted-foreground mt-2 text-lg">Here's what's happening with your links today.</p>
             </div>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
               <Plus className="w-4 h-4 mr-2" />
               Create Link
             </Button>
@@ -146,19 +148,19 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="hover:shadow-lg transition-all duration-300">
+                <Card className="hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 bg-gradient-to-br from-card to-card/80">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-2xl font-bold">
+                        <p className="text-sm font-medium text-muted-foreground/80 uppercase tracking-wide">{stat.title}</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <span className="text-3xl font-bold text-foreground">
                             <AnimatedCounter end={stat.value} />
                           </span>
                         </div>
                       </div>
-                      <div className="p-3 rounded-lg bg-primary/10">
-                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/10">
+                        <stat.icon className={`w-7 h-7 ${stat.color}`} />
                       </div>
                     </div>
                   </CardContent>
@@ -175,40 +177,45 @@ export default function DashboardPage() {
               transition={{ delay: 0.2 }}
               className="lg:col-span-2"
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5" />
+              <Card className="border-2 border-border/50 bg-gradient-to-br from-card to-card/80">
+                <CardHeader className="border-b border-border/50">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20">
+                      <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
                     Recent Activity
                   </CardTitle>
-                  <CardDescription>Real-time updates from your links</CardDescription>
+                  <CardDescription className="text-muted-foreground/80">Real-time updates from your links</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="p-6">
+                  <div className="space-y-3">
                     {analytics?.recentActivity?.map((activity: any, index: number) => (
                       <motion.div
                         key={activity.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + index * 0.1 }}
-                        className="flex items-center justify-between p-4 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                        className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50 transition-all duration-300 border border-border/30 hover:border-border/50"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                          <div className="w-2.5 h-2.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse" />
                           <div>
-                            <p className="font-medium">{activity.action}</p>
-                            <p className="text-sm text-muted-foreground">{activity.link}</p>
+                            <p className="font-medium text-foreground">{activity.action}</p>
+                            <p className="text-sm text-muted-foreground/80">{activity.link}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{activity.country}</span>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground/80">
+                          <span className="font-medium">{activity.country}</span>
                           <span>{activity.time}</span>
                         </div>
                       </motion.div>
                     )) || (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                        <p>No recent activity</p>
+                      <div className="text-center py-12 text-muted-foreground/60">
+                        <div className="p-4 rounded-full bg-muted/30 w-fit mx-auto mb-4">
+                          <TrendingUp className="w-8 h-8 opacity-50" />
+                        </div>
+                        <p className="text-lg font-medium">No recent activity</p>
+                        <p className="text-sm mt-1">Your link activity will appear here</p>
                       </div>
                     )}
                   </div>
@@ -218,32 +225,34 @@ export default function DashboardPage() {
 
             {/* Top Countries */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
+              <Card className="border-2 border-border/50 bg-gradient-to-br from-card to-card/80">
+                <CardHeader className="border-b border-border/50">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
+                      <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
                     Top Countries
                   </CardTitle>
-                  <CardDescription>Your best performing regions</CardDescription>
+                  <CardDescription className="text-muted-foreground/80">Your best performing regions</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="p-6">
+                  <div className="space-y-3">
                     {analytics?.topCountries?.slice(0, 4).map((country: any, index: number) => (
                       <motion.div
                         key={country.code}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 + index * 0.1 }}
-                        className="flex items-center justify-between p-3 rounded-lg bg-muted hover:bg-muted/80 transition-colors group"
+                        className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50 transition-all duration-300 border border-border/30 hover:border-border/50 group"
                       >
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span>{country.flag}</span>
-                            <p className="font-medium truncate">{country.name}</p>
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xl">{country.flag}</span>
+                            <p className="font-medium truncate text-foreground">{country.name}</p>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">{country.clicks.toLocaleString()} clicks</span>
-                            <Badge variant="secondary" className="text-xs">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-semibold text-foreground">{country.clicks.toLocaleString()} clicks</span>
+                            <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-primary/30">
                               #{index + 1}
                             </Badge>
                           </div>

@@ -15,8 +15,8 @@ export default function GitHubCallbackPage() {
       try {
         // Check if we're on the callback page and need to extract data from the current page
         const currentUrl = window.location.href
-        
-        if (currentUrl.includes('links.bhavya.live:3000/api/oauth/github/callback')) {
+
+        if (currentUrl.includes('https://linkweaver.bhavya.live/api/oauth/github/callback')) {
           // This means we're on the server's callback page
           // We need to extract the JSON data from the page content
           const pageContent = document.body.innerText
@@ -33,7 +33,7 @@ export default function GitHubCallbackPage() {
               })
               
               // Redirect to our frontend
-              window.location.href = 'http://localhost:3001/dashboard'
+              window.location.href = 'http://localhost:3000/dashboard'
               return
             }
           } catch (parseError) {
@@ -53,7 +53,7 @@ export default function GitHubCallbackPage() {
         })
         
         // Redirect to sign in page
-        window.location.href = 'http://localhost:3001/auth/signin'
+        window.location.href = 'http://localhost:3000/auth/signin'
       }
     }
 

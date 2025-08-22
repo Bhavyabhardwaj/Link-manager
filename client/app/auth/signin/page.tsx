@@ -60,7 +60,8 @@ export default function SigninPage() {
   const handleOAuthSignin = (provider: "github" | "google") => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const redirectUrl = `${apiUrl}/api/oauth/${provider}?redirect_uri=${encodeURIComponent(window.location.origin + '/auth/oauth/callback')}`;
+      const frontendUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const redirectUrl = `${apiUrl}/api/oauth/${provider}?redirect_uri=${encodeURIComponent(frontendUrl + '/auth/oauth/callback')}`;
       
       console.log(`Redirecting to: ${redirectUrl}`);
       window.location.href = redirectUrl;

@@ -1,77 +1,202 @@
+// app/layout.tsx
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"  // Import from mono, not sans!
+import localFont from "next/font/local"
 import "./globals.css"
 import { ThemeProvider } from "@/contexts/theme-context"
 import { AuthProvider } from "@/components/auth-provider"
 import { Toaster } from "@/components/ui/toaster"
 
+// Optimized font loading with proper fallbacks
 const inter = Inter({ 
   subsets: ["latin"],
-  display: 'swap',
+  variable: "--font-inter",
+  display: "swap",
   preload: true,
-  fallback: ['system-ui', 'arial']
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono", 
+  display: "swap",
+  fallback: ["Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+})
+
+// Geist fonts from NPM package (correct imports!)
+const geistSans = GeistSans
+const geistMono = GeistMono
+
+// Cal Sans font (optional - only if you have the file)
+const calSans = localFont({
+  src: [
+    {
+      path: "./fonts/CalSans-SemiBold.woff2",
+      weight: "600",
+      style: "normal"
+    }
+  ],
+  variable: "--font-cal-sans",
+  display: "swap",
+  fallback: ["var(--font-geist-sans)", "Inter", "system-ui", "sans-serif"]
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: "Link Manager - Powerful Link Management & Analytics",
-  description:
-    "Create beautiful bio pages, shorten URLs, and track analytics. Built for creators and professionals.",
-  keywords: ["link manager", "bio links", "url shortener", "analytics", "creator tools"],
-  authors: [{ name: "Link Manager Team" }],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://linkweaver.bhavya.live'),
+  title: {
+    default: "LinkWeaver - Advanced Link Management & Analytics Platform",
+    template: "%s | LinkWeaver"
+  },
+  description: "Create stunning bio pages, track analytics with precision, and manage your digital presence. The most advanced link management platform for creators, marketers, and businesses.",
+  keywords: [
+    "link management",
+    "bio pages", 
+    "url shortener",
+    "link analytics",
+    "creator tools",
+    "digital marketing",
+    "custom domains",
+    "QR codes",
+    "link tracking",
+    "social media tools"
+  ],
+  authors: [
+    { name: "Bhavya", url: "https://bhavya.live" },
+    { name: "LinkWeaver Team" }
+  ],
+  creator: "Bhavya",
+  publisher: "LinkWeaver",
+  category: "Technology",
+  classification: "SaaS Platform",
+  
+  // Enhanced icons with multiple formats
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/placeholder-icon.png', type: 'image/png', sizes: '32x32' }
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" }
     ],
-    shortcut: [
-      { url: '/icon.svg', type: 'image/svg+xml' }
-    ],
+    shortcut: "/favicon.ico",
     apple: [
-      { url: '/icon.svg', type: 'image/svg+xml' }
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" }
     ],
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/safari-pinned-tab.svg",
+        color: "#000000"
+      }
+    ]
   },
+
+  // Enhanced Open Graph
   openGraph: {
-    title: "Link Manager - Powerful Link Management & Analytics",
-    description:
-      "Create beautiful bio pages, shorten URLs, and track analytics. Built for creators and professionals.",
-    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-    siteName: "LinkCraft",
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://linkweaver.bhavya.live',
+    siteName: "LinkWeaver",
+    title: "LinkWeaver - Advanced Link Management & Analytics Platform",
+    description: "Create stunning bio pages, track analytics with precision, and manage your digital presence. The most advanced link management platform built for modern creators.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "LinkCraft - Premium Link Management",
+        alt: "LinkWeaver - Advanced Link Management Platform",
+        type: "image/png"
       },
-    ],
-    locale: "en_US",
-    type: "website",
+      {
+        url: "/og-image-square.png",
+        width: 1200,
+        height: 1200,
+        alt: "LinkWeaver Logo",
+        type: "image/png"
+      }
+    ]
   },
+
+  // Enhanced Twitter/X metadata
   twitter: {
     card: "summary_large_image",
-    title: "LinkCraft - The Link Manager That Sparks Conversations",
-    description:
-      "Beautiful bio pages. Powerful analytics. Lightning fast links. Built for creators who care about craft.",
-    images: ["/og-image.png"],
-    creator: "@linkcraft",
+    site: "@linkweaver",
+    creator: "@bhavyabuilds",
+    title: "LinkWeaver - Advanced Link Management Platform",
+    description: "Create stunning bio pages, track analytics with precision, and manage your digital presence like never before.",
+    images: {
+      url: "/twitter-image.png",
+      alt: "LinkWeaver - Link Management Platform"
+    }
   },
+
+  // Enhanced robots configuration
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+      "max-snippet": -1
+    }
   },
+
+  // Verification codes for search engines
   verification: {
-    google: "your-google-verification-code",
+    google: process.env.GOOGLE_VERIFICATION || "your-google-verification-code",
+    yandex: process.env.YANDEX_VERIFICATION,
+    yahoo: process.env.YAHOO_VERIFICATION,
+    other: {
+      "msvalidate.01": process.env.BING_VERIFICATION || ""
+    }
   },
-    generator: 'v0.dev'
+
+  // Additional metadata for better SEO
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://linkweaver.bhavya.live',
+    languages: {
+      "en-US": "/",
+      "en-GB": "/en-gb"
+    }
+  },
+
+  // App configuration
+  applicationName: "LinkWeaver",
+  referrer: "origin-when-cross-origin",
+  colorScheme: "dark light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" }
+  ],
+  
+  // PWA manifest
+  manifest: "/manifest.json",
+
+  // Additional structured data hints
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "mobile-web-app-capable": "yes",
+    "msapplication-TileColor": "#000000",
+    "msapplication-config": "/browserconfig.xml"
+  }
+}
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" }
+  ]
 }
 
 export default function RootLayout({
@@ -80,14 +205,82 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <ThemeProvider defaultTheme="dark" storageKey="linkcraft-theme">
+    <html 
+      lang="en" 
+      className={`${inter.variable} ${jetbrainsMono.variable} ${geistSans.variable} ${geistMono.variable} ${calSans.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* Preconnect to external domains for performance */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://linkweaver.bhavya.live" />
+        
+        {/* DNS prefetch for faster resource loading */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        
+        {/* Structured data for better SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "LinkWeaver",
+              "description": "Advanced link management and analytics platform for creators and businesses",
+              "url": process.env.NEXT_PUBLIC_APP_URL || 'https://linkweaver.bhavya.live',
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web Browser",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "publisher": {
+                "@type": "Person", 
+                "name": "Bhavya",
+                "url": "https://bhavya.live"
+              }
+            })
+          }}
+        />
+      </head>
+      <body 
+        className={`${geistSans.className} font-sans antialiased`}
+        suppressHydrationWarning
+      >
+        <ThemeProvider 
+          attribute="class"
+          defaultTheme="system" 
+          enableSystem={true}
+          storageKey="linkweaver-theme"
+          disableTransitionOnChange={false}
+        >
           <AuthProvider>
-            <div className="min-h-screen bg-background text-foreground antialiased" suppressHydrationWarning>{children}</div>
+            <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-200 dark:selection:bg-zinc-800">
+              {children}
+            </div>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>
+
+        {/* Analytics and performance monitoring */}
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            {/* Google Analytics */}
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                `
+              }}
+            />
+          </>
+        )}
       </body>
     </html>
   )

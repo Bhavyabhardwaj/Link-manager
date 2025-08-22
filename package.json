@@ -1,8 +1,13 @@
 {
   "dependencies": {
+    "@next/font": "^14.2.15",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-separator": "^1.1.7",
     "@tabler/icons-react": "^3.34.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
+    "geist": "^1.4.2",
+    "lucide-react": "^0.541.0",
     "tailwind-merge": "^3.3.1"
   }
 }

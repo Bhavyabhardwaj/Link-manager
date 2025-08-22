@@ -1,224 +1,197 @@
 ﻿"use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { GridBackground } from "@/components/ui/grid-background"
-import { Spotlight } from "@/components/ui/spotlight"
-import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid"
-import Marquee from "@/components/ui/marquee"
+import { BackgroundEffects } from "@/components/ui/background-effects"
+import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card"
+import { AnimatedStat } from "@/components/ui/animated-stats"
 import { cn } from "@/lib/utils"
 import { 
-  BarChart3, 
-  Users, 
-  QrCode, 
-  Zap, 
   ArrowRight,
+  BarChart3,
   Check,
   Globe,
   MousePointer,
-  Sparkles,
-  TrendingUp,
+  QrCode,
   Shield,
   Smartphone,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Users,
+  Zap,
   Eye,
   Download,
-  Star
+  Calendar,
+  Clock,
+  Target,
+  Layers,
+  Command,
+  Cpu
 } from "lucide-react"
+import { useRef } from "react"
+
+// Advanced Typography Component
+const TypographyH1 = ({ children, className, ...props }: any) => (
+  <h1 
+    className={cn(
+      "font-cal text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold tracking-tighter leading-[0.9]",
+      className
+    )} 
+    {...props}
+  >
+    {children}
+  </h1>
+)
 
 const testimonials = [
   {
     name: "Sarah Chen",
-    username: "@sarahchen",
-    body: "This is the best link management tool I've ever used. The analytics are insane!",
-    img: "https://avatar.vercel.sh/sarah",
+    username: "@sarahchen_dev",
+    body: "This is hands down the most elegant link management platform I've ever used. The analytics insights are incredible!",
+    img: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face",
+    rating: 5
   },
   {
     name: "Marcus Rodriguez", 
-    username: "@marcusrodriguez",
-    body: "LinkWeaver transformed my entire workflow. The QR codes feature is incredible.",
-    img: "https://avatar.vercel.sh/marcus",
+    username: "@marcusrod",
+    body: "LinkWeaver completely transformed our digital marketing strategy. We've seen a 340% increase in click-through rates.",
+    img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+    rating: 5
   },
   {
     name: "Emily Johnson",
     username: "@emilyjohnson", 
-    body: "Professional bio pages that actually convert. My CTR doubled!",
-    img: "https://avatar.vercel.sh/emily",
+    body: "The QR code generation and bio pages helped us bridge offline and online seamlessly. Revenue increased by 180%.",
+    img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    rating: 5
   },
   {
-    name: "Alex Kim",
-    username: "@alexkim",
-    body: "Clean interface, powerful features. Everything I wanted in a link tool.",
-    img: "https://avatar.vercel.sh/alex",
-  },
-  {
-    name: "Jordan Smith",
-    username: "@jordansmith",
-    body: "The custom domains feature is exactly what my business needed.",
-    img: "https://avatar.vercel.sh/jordan",
-  },
-  {
-    name: "Taylor Brown",
-    username: "@taylorbrown",
-    body: "Amazing product. The team really understands what creators need.",
-    img: "https://avatar.vercel.sh/taylor",
-  },
+    name: "David Park",
+    username: "@davidpark_tech",
+    body: "Clean, powerful, and incredibly fast. This is what modern SaaS should look like.",
+    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    rating: 5
+  }
 ]
 
-const ReviewCard = ({
-  img,
-  name,
-  username,
-  body,
-}: {
-  img: string
-  name: string
-  username: string
-  body: string
-}) => {
-  return (
-    <figure
-      className={cn(
-        "relative w-64 cursor-pointer overflow-hidden rounded-xl border p-4",
-        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
-      )}
-    >
-      <div className="flex flex-row items-center gap-2">
-        <img className="rounded-full" width="32" height="32" alt="" src={img} />
-        <div className="flex flex-col">
-          <figcaption className="text-sm font-medium dark:text-white">
-            {name}
-          </figcaption>
-          <p className="text-xs font-medium dark:text-white/40">{username}</p>
-        </div>
-      </div>
-      <blockquote className="mt-2 text-sm">{body}</blockquote>
-    </figure>
-  )
-}
-
-const SkeletonOne = () => {
-  return (
-    <div className="relative flex py-8 px-2 gap-10 h-full">
-      <div className="w-full p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full">
-        <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
-      </div>
-      <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-white dark:from-black via-white dark:via-black to-transparent w-full pointer-events-none" />
-      <div className="absolute top-0 z-40 inset-x-0 h-60 bg-gradient-to-b from-white dark:from-black via-transparent to-transparent w-full pointer-events-none" />
-    </div>
-  )
-}
-
-const SkeletonTwo = () => {
-  const variants = {
-    initial: {
-      backgroundPosition: "0 50%",
-    },
-    animate: {
-      backgroundPosition: ["0, 50%", "100% 50%", "0 50%"],
-    },
+const features = [
+  {
+    icon: <BarChart3 className="h-8 w-8" />,
+    title: "Precision Analytics",
+    description: "Real-time insights with geographic data, device analytics, referrer tracking, and conversion metrics that drive decision-making."
+  },
+  {
+    icon: <Users className="h-8 w-8" />,
+    title: "Beautiful Bio Pages",
+    description: "Create stunning, mobile-optimized landing pages that showcase your brand identity and convert visitors into followers."
+  },
+  {
+    icon: <QrCode className="h-8 w-8" />,
+    title: "Smart QR Codes",
+    description: "Generate dynamic QR codes with custom branding, advanced tracking capabilities, and bulk operations for enterprise needs."
+  },
+  {
+    icon: <Shield className="h-8 w-8" />,
+    title: "Enterprise Security",
+    description: "Advanced security features including link expiration, password protection, fraud detection, and compliance standards."
+  },
+  {
+    icon: <Globe className="h-8 w-8" />,
+    title: "Custom Domains",
+    description: "Use your own domain for branded short links that build trust, improve click-through rates, and enhance brand recognition."
+  },
+  {
+    icon: <Zap className="h-8 w-8" />,
+    title: "Lightning Performance",
+    description: "Global CDN ensures sub-100ms redirects with 99.99% uptime backed by enterprise SLA and 24/7 monitoring."
   }
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={variants}
-      transition={{
-        duration: 5,
-        repeat: Infinity,
-        repeatType: "reverse",
-      }}
-      className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"
-      style={{
-        backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.3) 1px, transparent 1px)`,
-        backgroundSize: `20px 20px`,
-      }}
-    ></motion.div>
-  )
-}
+]
 
-const SkeletonThree = () => {
-  return (
-    <div className="flex gap-2 h-full">
-      <div className="rounded-full w-12 h-12 bg-neutral-300 dark:bg-neutral-700"></div>
-      <div>
-        <div className="rounded-md w-20 h-4 bg-neutral-300 dark:bg-neutral-700 mb-2"></div>
-        <div className="rounded-md w-16 h-3 bg-neutral-200 dark:bg-neutral-800"></div>
-      </div>
-    </div>
-  )
-}
+const stats = [
+  { label: "Links Created", value: 2840, suffix: "M+" },
+  { label: "Active Users", value: 125, suffix: "K+" },
+  { label: "Countries", value: 180, suffix: "+" },
+  { label: "Uptime", value: 99.99, suffix: "%" }
+]
 
-const SkeletonFour = () => {
-  return (
-    <div className="h-60 md:h-60 flex flex-col items-center relative bg-transparent dark:bg-transparent mt-10">
-      <Globe className="absolute -top-10 md:-top-10 -left-10 md:-left-10 text-slate-500 dark:text-white h-24 w-24" />
-      <Globe className="absolute -bottom-10 -right-10 text-slate-500 dark:text-white h-24 w-24" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <TrendingUp className="h-16 w-16 text-slate-500 dark:text-white" />
-      </div>
-    </div>
-  )
-}
-
-const SkeletonFive = () => {
-  return (
-    <div className="relative flex flex-col items-center p-6 h-full">
-      <div className="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
-        <BarChart3 className="w-8 h-8 text-white" />
-      </div>
-      <div className="space-y-2 w-full">
-        <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-3/4"></div>
-        <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2"></div>
-        <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3"></div>
-      </div>
-    </div>
-  )
-}
+const companies = [
+  "TechCorp", "StartupHub", "CreativeStudio", "DigitalFlow", "InnovateLab", "FutureTech"
+]
 
 export default function LandingPage() {
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  })
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0])
+
   return (
-    <div className="min-h-screen bg-black dark:bg-black text-white relative overflow-hidden">
-      <GridBackground />
-      <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 relative overflow-x-hidden">
+      <BackgroundEffects />
       
-      {/* Navigation */}
+      {/* Premium Navigation */}
       <motion.nav 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="sticky top-0 z-50 border-b border-white/[0.1] bg-black/80 backdrop-blur-xl"
+        transition={{ duration: 0.6, ease: [0.23, 1, 0.320, 1] }}
+        className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-200/50 dark:border-zinc-800/50 bg-white/80 dark:bg-black/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-black/60"
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <motion.div 
-                className="w-8 h-8 bg-white rounded-md flex items-center justify-center"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Zap className="w-4 h-4 text-black" />
-              </motion.div>
-              <span className="text-lg font-bold">
+            <motion.div 
+              className="flex items-center space-x-3"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="relative">
+                <motion.div 
+                  className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+                  whileHover={{ rotate: 180 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Zap className="w-4 h-4 text-white" />
+                </motion.div>
+              </div>
+              <span className="text-xl font-cal font-semibold">
                 LinkWeaver
               </span>
+            </motion.div>
+            
+            <div className="hidden md:flex items-center space-x-8">
+              {['Features', 'Pricing', 'Docs', 'Enterprise'].map((item, index) => (
+                <motion.div
+                  key={item}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Link 
+                    href={`/${item.toLowerCase()}`} 
+                    className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors duration-200 relative group"
+                  >
+                    {item}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full" />
+                  </Link>
+                </motion.div>
+              ))}
             </div>
-            <div className="flex items-center space-x-6">
-              <Link href="/pricing" className="text-sm text-white/60 hover:text-white transition-colors">
-                Pricing
-              </Link>
-              <Link href="/docs" className="text-sm text-white/60 hover:text-white transition-colors">
-                Docs
-              </Link>
+            
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Link href="/auth/signin">
-                <Button variant="ghost" size="sm" className="text-sm text-white hover:bg-white/10">
+                <Button variant="ghost" size="sm" className="text-sm font-medium">
                   Sign in
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm" className="text-sm bg-white text-black hover:bg-white/90">
+                <Button size="sm" className="text-sm font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-lg hover:shadow-xl transition-all duration-200">
                   Get started
                 </Button>
               </Link>
@@ -228,202 +201,339 @@ export default function LandingPage() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-6 lg:px-8 overflow-hidden">
+        <motion.div style={{ y, opacity }} className="max-w-7xl mx-auto">
+          <div className="text-center max-w-6xl mx-auto pt-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.23, 1, 0.320, 1] }}
               className="mb-8"
             >
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white/80 text-sm font-medium mb-6 border border-white/20">
-                <Star className="w-4 h-4 mr-2 text-yellow-400" />
-                Trusted by 10,000+ creators worldwide
-              </div>
+              <Badge 
+                variant="secondary" 
+                className="px-6 py-3 text-sm font-medium bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-full"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Trusted by 125K+ creators worldwide
+              </Badge>
             </motion.div>
             
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[1.1]"
+              transition={{ duration: 1, delay: 0.2, ease: [0.23, 1, 0.320, 1] }}
             >
-              The future of{" "}
-              <span className="bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
-                link management
-              </span>
-            </motion.h1>
+              <TypographyH1 className="mb-8">
+                <span className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-600 dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent">
+                  Link management
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                  reimagined
+                </span>
+              </TypographyH1>
+            </motion.div>
             
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xl md:text-2xl text-white/60 mb-12 max-w-3xl mx-auto leading-relaxed"
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.23, 1, 0.320, 1] }}
+              className="text-xl md:text-2xl lg:text-3xl text-zinc-600 dark:text-zinc-400 mb-12 max-w-5xl mx-auto leading-relaxed font-light"
             >
-              Create stunning bio pages, track every click with precision analytics, and manage your digital presence like never before.
+              Create beautiful bio pages, track performance with precision analytics, 
+              and manage your digital presence with the most advanced link platform ever built.
             </motion.p>
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
+              transition={{ duration: 0.8, delay: 0.6, ease: [0.23, 1, 0.320, 1] }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             >
               <Link href="/auth/signup">
-                <Button size="lg" className="px-8 py-4 text-lg bg-white text-black hover:bg-white/90 font-medium">
-                  Start building for free
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button 
+                    size="lg" 
+                    className="px-8 py-4 text-lg font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-2xl hover:shadow-3xl transition-all duration-300"
+                  >
+                    Start building for free
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </motion.div>
               </Link>
               <Link href="/demo">
-                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white/20 text-white hover:bg-white/10">
-                  <Globe className="mr-2 w-5 h-5" />
-                  Live demo
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="px-8 py-4 text-lg font-medium border-2 border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-950 transition-all duration-200"
+                  >
+                    <Globe className="mr-2 w-5 h-5" />
+                    Live demo
+                  </Button>
+                </motion.div>
               </Link>
             </motion.div>
+
+            {/* Animated Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.8, ease: [0.23, 1, 0.320, 1] }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            >
+              {stats.map((stat, index) => (
+                <AnimatedStat
+                  key={stat.label}
+                  value={stat.value}
+                  label={stat.label}
+                  suffix={stat.suffix}
+                  delay={index * 200}
+                />
+              ))}
+            </motion.div>
+
+            {/* Trusted by companies */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1 }}
+              className="mt-20"
+            >
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-medium">
+                Trusted by teams at
+              </p>
+              <div className="flex flex-wrap justify-center items-center gap-12 opacity-60">
+                {companies.map((company, index) => (
+                  <motion.div
+                    key={company}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
+                    className="text-lg font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                  >
+                    {company}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Interactive Features Grid */}
+      <section className="py-32 px-6 lg:px-8 relative">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.320, 1] }}
+            viewport={{ once: true }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-cal font-semibold mb-6 tracking-tight">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
+                Everything you need to
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                succeed
+              </span>
+            </h2>
+            <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto leading-relaxed">
+              Powerful features designed for creators, marketers, and businesses who demand excellence
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <InteractiveFeatureCard
+                key={feature.title}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                delay={index * 0.1}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features Bento Grid */}
-      <section className="py-20 px-6">
+      {/* Social Proof with Enhanced Design */}
+      <section className="py-32 px-6 lg:px-8 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.320, 1] }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Everything you need to{" "}
-              <span className="bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
-                succeed
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-cal font-semibold mb-6 tracking-tight">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
+                Loved by creators
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                worldwide
               </span>
             </h2>
-            <p className="text-xl text-white/60 max-w-3xl mx-auto">
-              Powerful features designed for creators, marketers, and businesses who demand the best
+            <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
+              See what our community of over 125,000 creators, marketers, and businesses have to say
             </p>
           </motion.div>
 
-          <BentoGrid className="max-w-4xl mx-auto">
-            <BentoGridItem
-              title="Advanced Analytics"
-              description="Track every click with precision. Get detailed insights about your audience, geographic data, and user behavior patterns."
-              header={<SkeletonFive />}
-              className="md:col-span-2 bg-neutral-950 border-white/[0.1]"
-              icon={<BarChart3 className="h-4 w-4 text-neutral-300" />}
-            />
-            <BentoGridItem
-              title="Global Performance"
-              description="Lightning-fast redirects powered by our global CDN network."
-              header={<SkeletonFour />}
-              className="md:col-span-1 bg-neutral-950 border-white/[0.1]"
-              icon={<Globe className="h-4 w-4 text-neutral-300" />}
-            />
-            <BentoGridItem
-              title="Beautiful Bio Pages"
-              description="Create stunning, mobile-optimized landing pages that convert visitors into followers."
-              header={<SkeletonOne />}
-              className="md:col-span-1 bg-neutral-950 border-white/[0.1]"
-              icon={<Users className="h-4 w-4 text-neutral-300" />}
-            />
-            <BentoGridItem
-              title="Smart QR Codes"
-              description="Generate dynamic QR codes with custom designs, logos, and tracking capabilities."
-              header={<SkeletonTwo />}
-              className="md:col-span-2 bg-neutral-950 border-white/[0.1]"
-              icon={<QrCode className="h-4 w-4 text-neutral-300" />}
-            />
-          </BentoGrid>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 40, rotateY: -15 }}
+                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.23, 1, 0.320, 1] }}
+                viewport={{ once: true }}
+                whileHover={{ y: -8, rotateY: 5 }}
+                className="group relative"
+              >
+                <div className="h-full rounded-3xl bg-white dark:bg-zinc-900 p-8 shadow-xl border border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-zinc-200/20 dark:group-hover:shadow-zinc-900/20">
+                  <div className="flex items-center mb-6">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-zinc-700 dark:text-zinc-300 mb-6 text-lg leading-relaxed">
+                    "{testimonial.body}"
+                  </p>
+                  <div className="flex items-center space-x-4">
+                    <img 
+                      src={testimonial.img} 
+                      alt={testimonial.name}
+                      className="h-12 w-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        {testimonial.username}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Social Proof Marquee */}
-      <section className="py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Loved by creators worldwide
-          </h2>
-          <p className="text-lg text-white/60">
-            See what our community is saying
-          </p>
-        </div>
-        
-        <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
-          <Marquee pauseOnHover className="[--duration:20s]">
-            {testimonials.map((review, idx) => (
-              <ReviewCard key={idx} {...review} />
-            ))}
-          </Marquee>
-          <Marquee reverse pauseOnHover className="[--duration:20s]">
-            {testimonials.map((review, idx) => (
-              <ReviewCard key={idx} {...review} />
-            ))}
-          </Marquee>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-black"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-black"></div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 px-6 relative">
-        <div className="max-w-4xl mx-auto text-center">
+      {/* Enhanced CTA Section */}
+      <section className="py-32 px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
+        <div className="max-w-5xl mx-auto text-center relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.320, 1] }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-6xl font-bold mb-8">
-              Ready to{" "}
-              <span className="bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
-                transform
-              </span>{" "}
-              your links?
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-cal font-semibold mb-8 tracking-tight">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent">
+                Ready to transform
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                your links?
+              </span>
             </h2>
-            <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto">
-              Join thousands of creators who trust LinkWeaver to power their digital presence. Start free, no credit card required.
+            <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 mb-12 max-w-4xl mx-auto leading-relaxed">
+              Join over 125,000 creators who trust LinkWeaver to power their digital presence. 
+              Start free, scale as you grow.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/auth/signup">
-                <Button size="lg" className="px-12 py-4 text-lg bg-white text-black hover:bg-white/90 font-medium">
-                  Start building today
-                  <TrendingUp className="ml-2 w-5 h-5" />
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button 
+                    size="lg" 
+                    className="px-12 py-4 text-lg font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-2xl hover:shadow-3xl transition-all duration-300"
+                  >
+                    Start building today
+                    <TrendingUp className="ml-2 w-5 h-5" />
+                  </Button>
+                </motion.div>
               </Link>
             </div>
-            <p className="text-sm text-white/40 mt-6">
-              No credit card required • Free forever plan • Cancel anytime
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-6">
+              No credit card required • Free forever plan • Enterprise support available
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.1] py-12 px-6">
+      {/* Enhanced Footer */}
+      <footer className="border-t border-zinc-200 dark:border-zinc-800 py-16 px-6 lg:px-8 bg-zinc-50 dark:bg-zinc-950">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-6 md:mb-0">
-              <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
-                <Zap className="w-3 h-3 text-black" />
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-8 lg:space-y-0">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-bold">
+              <span className="text-xl font-cal font-semibold">
                 LinkWeaver
               </span>
             </div>
-            <div className="flex items-center space-x-8">
-              <Link href="/privacy" className="text-sm text-white/60 hover:text-white">
-                Privacy
-              </Link>
-              <Link href="/terms" className="text-sm text-white/60 hover:text-white">
-                Terms
-              </Link>
-              <Link href="/support" className="text-sm text-white/60 hover:text-white">
-                Support
-              </Link>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+              <div>
+                <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Product</h4>
+                <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li><Link href="/features" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Features</Link></li>
+                  <li><Link href="/pricing" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Pricing</Link></li>
+                  <li><Link href="/enterprise" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Enterprise</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Resources</h4>
+                <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li><Link href="/docs" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Documentation</Link></li>
+                  <li><Link href="/api" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">API</Link></li>
+                  <li><Link href="/blog" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Blog</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Company</h4>
+                <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li><Link href="/about" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">About</Link></li>
+                  <li><Link href="/careers" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Careers</Link></li>
+                  <li><Link href="/contact" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Contact</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Legal</h4>
+                <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li><Link href="/privacy" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Privacy</Link></li>
+                  <li><Link href="/terms" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Terms</Link></li>
+                  <li><Link href="/security" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Security</Link></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500 dark:text-zinc-400">
+              <p>© 2025 LinkWeaver. Crafted with precision for creators.</p>
+              <p className="mt-4 md:mt-0">Built with Next.js, deployed on Vercel</p>
             </div>
           </div>
         </div>

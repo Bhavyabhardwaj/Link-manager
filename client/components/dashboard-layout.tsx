@@ -36,12 +36,12 @@ import { useAuth } from "@/hooks/use-auth"
 import { useToast } from "@/hooks/use-toast"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Bio Links", href: "/dashboard/bio-links", icon: Users },
-  { name: "Short Links", href: "/dashboard/short-links", icon: Link2 },
-  { name: "QR Codes", href: "/dashboard/qr-codes", icon: QrCode },
-  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: Home, badge: null },
+  { name: "Bio Links", href: "/dashboard/bio-links", icon: Users, badge: null },
+  { name: "Short Links", href: "/dashboard/short-links", icon: Link2, badge: "New" },
+  { name: "QR Codes", href: "/dashboard/qr-codes", icon: QrCode, badge: null },
+  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, badge: null },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings, badge: null },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -73,36 +73,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed left-0 top-0 h-full w-72 bg-background border-r border-border">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed left-0 top-0 h-full w-72 bg-background border-r border-border shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <Link href="/dashboard" className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Link2 className="w-4 h-4 text-white" />
+              <Link href="/dashboard" className="flex items-center gap-3 group">
+                <div className="relative">
+                  <div className="w-8 h-8 bg-black dark:bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                    <Link2 className="w-4 h-4 text-white dark:text-black" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
                 </div>
-                <span className="font-semibold text-lg">LinkWeaver</span>
+                <span className="font-bold text-lg text-foreground">LinkWeaver</span>
               </Link>
               <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(false)}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
             <nav className="p-4">
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      className={`group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                         isActive
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          ? "bg-black dark:bg-white text-white dark:text-black shadow-lg"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}
                       onClick={() => setSidebarOpen(false)}
                     >
-                      <item.icon className="w-4 h-4" />
-                      {item.name}
+                      <div className="flex items-center gap-3">
+                        <item.icon className={`w-4 h-4 ${isActive ? "text-white dark:text-black" : ""}`} />
+                        {item.name}
+                      </div>
+                      {item.badge && (
+                        <Badge className="bg-emerald-500 text-white text-xs px-2 py-0.5 border-0">{item.badge}</Badge>
+                      )}
                     </Link>
                   )
                 })}
@@ -114,32 +122,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col overflow-y-auto bg-background border-r border-border">
+        <div className="flex grow flex-col overflow-y-auto bg-background border-r border-border shadow-xl">
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-border">
-            <Link href="/dashboard" className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Link2 className="w-4 h-4 text-white" />
+            <Link href="/dashboard" className="flex items-center gap-3 group">
+              <div className="relative">
+                <div className="w-8 h-8 bg-black dark:bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                  <Link2 className="w-4 h-4 text-white dark:text-black" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
               </div>
-              <span className="font-semibold text-lg">LinkWeaver</span>
+              <span className="font-bold text-lg text-foreground">LinkWeaver</span>
             </Link>
           </div>
 
           <nav className="flex-1 p-4">
-            <div className="space-y-1">
+            <div className="space-y-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    className={`group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-lg"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <item.icon className="w-4 h-4" />
-                    {item.name}
+                    <div className="flex items-center gap-3">
+                      <item.icon className={`w-4 h-4 ${isActive ? "text-white dark:text-black" : ""}`} />
+                      {item.name}
+                    </div>
+                    {item.badge && (
+                      <Badge className="bg-emerald-500 text-white text-xs px-2 py-0.5 border-0">{item.badge}</Badge>
+                    )}
                   </Link>
                 )
               })}
@@ -150,15 +166,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="p-4 border-t border-border">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start p-3 h-auto">
-                  <Avatar className="w-8 h-8 mr-3">
-                    <AvatarImage src="/placeholder-40x40.png" alt={user?.name || "User"} />
-                    <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-                      {user?.name?.charAt(0) || "U"}
+                <Button variant="ghost" className="w-full justify-start p-3 h-auto rounded-xl">
+                  <Avatar className="w-8 h-8 mr-3 ring-2 ring-border">
+                    <AvatarImage src={user?.avatar || user?.profileImage} alt={user?.name || "User"} />
+                    <AvatarFallback className="bg-muted text-muted-foreground">
+                      <User className="w-4 h-4" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium">{user?.name || "Demo User"}</div>
+                    <div className="text-sm font-semibold text-foreground">{user?.name || "Demo User"}</div>
                     <div className="text-xs text-muted-foreground truncate">{user?.email || "demo@linkweaver.co"}</div>
                   </div>
                   <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -201,20 +217,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search links, analytics, settings..."
-                className="pl-10 border-0 bg-muted/50 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring"
+                className="pl-10 border-0 bg-muted/50 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring rounded-xl"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Button size="sm" className="hidden sm:flex bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              className="hidden sm:flex bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 dark:text-black text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl group"
+            >
+              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-200" />
               Create Link
             </Button>
 
-            <Button variant="ghost" size="sm" className="relative">
+            <Button variant="ghost" size="sm" className="relative rounded-xl">
               <Bell className="w-5 h-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-500">
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-500 border-0 animate-pulse">
                 3
               </Badge>
             </Button>
@@ -224,10 +243,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-40x40.png" alt={user?.name || "User"} />
-                    <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-                      {user?.name?.charAt(0) || "U"}
+                  <Avatar className="h-8 w-8 ring-2 ring-border">
+                    <AvatarImage src={user?.avatar || user?.profileImage} alt={user?.name || "User"} />
+                    <AvatarFallback className="bg-muted text-muted-foreground">
+                      <User className="w-4 h-4" />
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -235,7 +254,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <DropdownMenuContent className="w-56" align="end">
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user?.name || "Demo User"}</p>
+                    <p className="font-semibold text-foreground">{user?.name || "Demo User"}</p>
                     <p className="w-[200px] truncate text-sm text-muted-foreground">
                       {user?.email || "demo@linkweaver.co"}
                     </p>

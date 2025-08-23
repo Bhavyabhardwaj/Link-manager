@@ -45,7 +45,6 @@ export default function SigninPage() {
       await signIn(data.username, data.password);
       toast({
         title: "Welcome back!",
-        description: "You have been signed in successfully.",
       });
       router.push('/dashboard');
     } catch (error: any) {
@@ -101,7 +100,7 @@ export default function SigninPage() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-            <CardDescription>Sign in to your LinkCraft account</CardDescription>
+            <CardDescription>Sign in to your LinkWeaver account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">

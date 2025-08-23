@@ -79,7 +79,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                 <Link2 className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-lg">LinkCraft</span>
+              <span className="font-bold text-lg">LinkWeaver</span>
             </Link>
             <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(false)}>
               <X className="w-4 h-4" />
@@ -116,7 +116,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Link2 className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">LinkCraft</span>
+              <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">LinkWeaver</span>
             </Link>
           </div>
           <nav className="flex flex-1 flex-col">
@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex flex-col space-y-1 leading-none">
                       <p className="font-semibold text-foreground">{user?.name || "Demo User"}</p>
                       <p className="w-[200px] truncate text-sm text-muted-foreground/80">
-                        {user?.email || "demo@linkcraft.co"}
+                        {user?.email || "demo@LinkWeaver.co"}
                       </p>
                     </div>
                   </div>

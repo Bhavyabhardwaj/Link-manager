@@ -484,7 +484,7 @@ export default function SettingsPage() {
                     <Palette className="w-5 h-5" />
                     Appearance Settings
                   </CardTitle>
-                  <CardDescription>Customize how LinkCraft looks and feels</CardDescription>
+                  <CardDescription>Customize how LinkWeaver looks and feels</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">

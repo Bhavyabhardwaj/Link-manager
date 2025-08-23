@@ -28,7 +28,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 export function ThemeProvider({
   children,
   defaultTheme = "dark", // Dark mode as default
-  storageKey = "linkcraft-theme",
+  storageKey = "LinkWeaver-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme)

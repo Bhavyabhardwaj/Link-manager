@@ -194,15 +194,15 @@ export default function PublicBioPage({ params }: { params: { username: string }
   return (
     <>
       <Head>
-        <title>{bioData.displayName} - LinkCraft Bio</title>
+        <title>{bioData.displayName} - LinkWeaver Bio</title>
         <meta name="description" content={bioData.bio} />
-        <meta property="og:title" content={`${bioData.displayName} - LinkCraft Bio`} />
+        <meta property="og:title" content={`${bioData.displayName} - LinkWeaver Bio`} />
         <meta property="og:description" content={bioData.bio} />
         <meta property="og:type" content="profile" />
         <meta property="og:url" content={`${window.location.origin}/u/${bioData.username}`} />
         {bioData.avatar && <meta property="og:image" content={bioData.avatar} />}
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${bioData.displayName} - LinkCraft Bio`} />
+        <meta name="twitter:title" content={`${bioData.displayName} - LinkWeaver Bio`} />
         <meta name="twitter:description" content={bioData.bio} />
       </Head>
 
@@ -323,7 +323,7 @@ export default function PublicBioPage({ params }: { params: { username: string }
             transition={{ delay: 1, duration: 0.6 }}
             className="mt-8 text-center"
           >
-            <p className={`text-xs ${currentTheme.text} opacity-50`}>Powered by LinkCraft</p>
+            <p className={`text-xs ${currentTheme.text} opacity-50`}>Powered by LinkWeaver</p>
           </motion.div>
         </motion.div>
       </div>

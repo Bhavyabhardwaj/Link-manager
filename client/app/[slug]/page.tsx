@@ -283,7 +283,7 @@ export default function ShortLinkRedirectPage({ params }: { params: { slug: stri
             <div className="text-center text-xs text-muted-foreground border-t pt-4">
               <div className="flex items-center justify-center gap-1 mb-2">
                 <Shield className="w-3 h-3" />
-                <span>Demo Mode - LinkCraft</span>
+                <span>Demo Mode - LinkWeaver</span>
               </div>
               <p className="mb-1">This is a demonstration of password-protected links</p>
               <p className="text-primary">Try passwords: demo, password, or 123456</p>

@@ -351,7 +351,7 @@ export default function ProtectedLinkPage() {
             <div className="text-center pt-4 border-t border-white/10">
               <Badge variant="secondary" className="bg-white/10 text-gray-300 border-white/20">
                 <Shield className="w-3 h-3 mr-1" />
-                Demo Mode - LinkCraft
+                Demo Mode - LinkWeaver
               </Badge>
               <p className="text-xs text-gray-400 mt-2">
                 This is a demonstration of password-protected links

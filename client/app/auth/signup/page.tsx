@@ -1,5 +1,6 @@
 "use client"
 
+import { Controller } from "react-hook-form"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Eye, EyeOff, Github, Chrome, ArrowLeft, Check, Zap } from "lucide-react"
@@ -16,7 +17,7 @@ import { z } from "zod"
 
 const signupSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
+    username: z.string().min(2, "Username must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
@@ -47,9 +48,8 @@ const PasswordStrength = ({ password }: { password: string }) => {
         {[1, 2, 3, 4].map((level) => (
           <div
             key={level}
-            className={`h-1 flex-1 rounded-full transition-colors ${
-              level <= strength ? strengthColors[strength - 1] : "bg-gray-200"
-            }`}
+            className={`h-1 flex-1 rounded-full transition-colors ${level <= strength ? strengthColors[strength - 1] : "bg-gray-200"
+              }`}
           />
         ))}
       </div>
@@ -78,6 +78,7 @@ export default function SignUpPage() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
@@ -89,11 +90,11 @@ export default function SignUpPage() {
     setIsLoading(true)
     try {
       // API call to backend
-      const response = await fetch("http://144.24.131.152:3000/api/auth/signup", {
+      const response = await fetch("https://linkweaver.bhavya.live/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: data.name,
+          username: data.username,
           email: data.email,
           password: data.password,
         }),
@@ -107,11 +108,12 @@ export default function SignUpPage() {
       console.error("Signup error:", error)
     } finally {
       setIsLoading(false)
+      console.log("Signup data submitted:", data)
     }
   }
 
   const handleOAuthSignup = (provider: "github" | "google") => {
-    window.location.href = `http://144.24.131.152:3000/api/auth/${provider}`
+    window.location.href = `https://linkweaver.bhavya.live/api/auth/${provider}`
   }
 
   return (
@@ -190,18 +192,17 @@ export default function SignUpPage() {
                   id="name"
                   type="text"
                   placeholder="Enter your full name"
-                  {...register("name")}
-                  className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                    errors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                  }`}
+                  {...register("username")}
+                  className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.username ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                    }`}
                 />
-                {errors.name && (
+                {errors.username && (
                   <motion.p
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-sm text-red-600"
                   >
-                    {errors.name.message}
+                    {errors.username.message}
                   </motion.p>
                 )}
               </div>
@@ -215,9 +216,8 @@ export default function SignUpPage() {
                   type="email"
                   placeholder="Enter your email"
                   {...register("email")}
-                  className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                    errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                  }`}
+                  className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                    }`}
                 />
                 {errors.email && (
                   <motion.p
@@ -240,9 +240,8 @@ export default function SignUpPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     {...register("password")}
-                    className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10 ${
-                      errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                    }`}
+                    className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10 ${errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                      }`}
                   />
                   <Button
                     type="button"
@@ -276,9 +275,8 @@ export default function SignUpPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
                     {...register("confirmPassword")}
-                    className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10 ${
-                      errors.confirmPassword ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                    }`}
+                    className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10 ${errors.confirmPassword ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                      }`}
                   />
                   <Button
                     type="button"
@@ -302,11 +300,20 @@ export default function SignUpPage() {
               </div>
 
               <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="terms"
-                  {...register("terms")}
-                  className="mt-1 border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                <Controller
+                  name="terms"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      id="terms"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="mt-1 border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                    />
+                  )}
                 />
+
+
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed cursor-pointer">
                     I agree to the{" "}

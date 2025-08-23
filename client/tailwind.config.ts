@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors")
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -27,99 +29,68 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#121212",       // very dark background for modern look
+        foreground: "#e0e0e0",       // light foreground text for contrast
+
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          50: "#f3e8ff",
+          100: "#e0c0ff",
+          200: "#c090ff",
+          300: "#a360ff",
+          400: "#7f32ff",
+          500: "#6b1fe6",            // vibrant purple main
+          600: "#5a17b4",
+          700: "#4a1286",
+          800: "#3a0d5a",
+          900: "#2c0940",
+          DEFAULT: "#6b1fe6",
+          foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          50: "#ffe3f1",
+          100: "#ffb8d9",
+          200: "#ff8fbe",
+          300: "#ff669f",
+          400: "#fc3c72",
+          500: "#f2305d",             // bright pink
+          600: "#c52249",
+          700: "#991b3d",
+          800: "#6d1230",
+          900: "#4c0d25",
+          DEFAULT: "#f2305d",
+          foreground: "#fff",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          50: "#d6f0f0",
+          100: "#a5d3d2",
+          200: "#74b5b4",
+          300: "#409797",
+          400: "#187c7c",
+          500: "#0f6c6b",             // subdued teal accent
+          600: "#0c5958",
+          700: "#094644",
+          800: "#062e32",
+          900: "#041e22",
+          DEFAULT: "#0f6c6b",
+          foreground: "#daf5f4",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        muted: {
+          DEFAULT: "#6b7280",
+          foreground: "#9ca3af",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#1e293b", // slate-800 like dark card background
+          foreground: "#f8fafc", // almost white text on cards
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0.75rem",
+        md: "0.5rem",
+        sm: "0.375rem",
       },
-      keyframes: {
-        "fade-in": {
-          from: { opacity: 0 },
-          to: { opacity: 1 },
-        },
-        "fade-in-up": {
-          from: { opacity: 0, transform: "translateY(20px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
-        },
-        "slide-in-right": {
-          from: { transform: "translateX(100%)" },
-          to: { transform: "translateX(0)" },
-        },
-        shimmer: {
-          from: {
-            backgroundPosition: "0 0",
-          },
-          to: {
-            backgroundPosition: "-200% 0",
-          },
-        },
-        "gradient-shift": {
-          "0%, 100%": { "background-position": "0% 50%" },
-          "50%": { "background-position": "100% 50%" },
-        },
-        marquee: {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(calc(-100% - var(--gap)))" },
-        },
-        "marquee-vertical": {
-          from: { transform: "translateY(0)" },
-          to: { transform: "translateY(calc(-100% - var(--gap)))" },
-        },
-        "float": {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-20px)" },
-        },
-        "pulse-slow": {
-          "0%, 100%": { opacity: 1 },
-          "50%": { opacity: 0.4 },
-        },
-      },
-      animation: {
-        "fade-in": "fade-in 0.5s ease-in-out",
-        "fade-in-up": "fade-in-up 0.5s ease-in-out",
-        "slide-in-right": "slide-in-right 0.3s ease-in-out",
-        shimmer: "shimmer 2s linear infinite",
-        "gradient-shift": "gradient-shift 3s ease-in-out infinite",
-        marquee: "marquee var(--duration) linear infinite",
-        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
-        float: "float 6s ease-in-out infinite",
-        "pulse-slow": "pulse-slow 3s ease-in-out infinite",
-      },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
+      /*
+      Custom animations and keyframes can be added here if needed.
+      */
     },
   },
   plugins: [require("tailwindcss-animate")],
